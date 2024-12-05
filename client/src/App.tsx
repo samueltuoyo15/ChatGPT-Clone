@@ -5,12 +5,12 @@ import ReactMarkdown from 'react-markdown'
 import loadingGif from '/loading.gif'
 
 const App = () => {
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [quickPrompt, setQuickPrompt] = useState(false)
-  const [conversation, setConversation] = useState([])
-  const chatContainerRef = useRef(null)
-  const sendButtonRef = useRef(null)
+  const [input, setInput] = useState<string>('')
+  const [loading, setLoading] = useState<string>(false)
+  const [quickPrompt, setQuickPrompt] = useState<string>(false)
+  const [conversation, setConversation] = useState<any []>([])
+  const chatContainerRef = useRef<boolean>(null)
+  const sendButtonRef = useRef<null>(null)
 
    useEffect(() => {
    const savedChats = localStorage.getItem("conversation");
