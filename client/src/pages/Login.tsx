@@ -1,8 +1,9 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 const Login = ({setIsAuthenticated}) => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const navigate = useNavigate()
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if(!email.trim()) return setError('please provide an email')
@@ -13,7 +14,11 @@ const Login = ({setIsAuthenticated}) => {
       body: JSON.stringify({email}),
       });
       const data = await response.json()
-      console.log(data)
+      setIsAuthenticated(true)
+      localStorage.setItem('isAuthenticated', 'true')
+      localStorage.setItem('user', JSON.stringify(data.user))
+      localStorage.setItem('token', data.token)
+      window.location.href = "/";
       if (!response.ok) {  
         throw new Error(data.message)
       }

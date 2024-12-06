@@ -1,10 +1,11 @@
 import {Link} from "react-router-dom";
 import { useState, useEffect, useRef } from 'react'
-import { FaPaperPlane, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from 'react-icons/fa'
+import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import ReactMarkdown from 'react-markdown'
 import loadingGif from '/loading.gif'
 import Loader from '../components/Loader'
+import Navbar from '../components/Navbar'
 const Main = () => {
   const [input, setInput] = useState<string>('')
   const [loading, setLoading] = useState<string>(false)
@@ -12,7 +13,25 @@ const Main = () => {
   const [conversation, setConversation] = useState<any []>([])
   const chatContainerRef = useRef<boolean>(null)
   const sendButtonRef = useRef<null>(null)
+  const [session, setSession] = useState<any[]>([])
+  const [showSettings, setShowSettings] = useState<boolean>(false)
+ 
+   useEffect(() => {
+  const user = localStorage.getItem('user');
+  if (user) {
+    try {
+      const parsedUser = JSON.parse(user); 
+      setSession(Array.isArray(parsedUser) ? parsedUser : [parsedUser]); 
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error);
+      setSession([]); 
+    }
+  } else {
+    setSession([]); 
+  }
+}, []);
 
+  
    useEffect(() => {
    const savedChats = localStorage.getItem("conversation");
      if (savedChats) {
@@ -34,12 +53,9 @@ const Main = () => {
   
   const handleGenerate = async (e) => {
   e.preventDefault();
-
-  if (!input.trim()) {
-    alert('Please type in a prompt');
-    return;
+  if(!input.trim()){
+    return
   }
-  
   setConversation((prev) => [...prev, { sender: 'user', message: input }]);
   setLoading(true);
 
@@ -76,12 +92,27 @@ const Main = () => {
   return (
     <>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 z-10 flex justify-between items-center">
+        {session.length > 0 ? (
+        <>
+        <FaBars className="text-white" onClick=/>
+        <div className="flex items-center bg-zinc-500 rounded py-1 px-3">
+          <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
+          <IoIosArrowDown className="ml-2" />
+        </div>
         <FaRegEdit className="text-white" />
-        <div className="flex items-center">
+        </>
+        )
+         :(
+         <>
+          <FaRegEdit className="text-white" />
+         <div className="flex items-center">
           <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
           <IoIosArrowDown className="ml-2" />
         </div>
         <Link to="login" className="rounded-2xl px-2 text-black bg-white">Login</Link>
+         </>
+          )
+        }
       </header>
 
       <div id="container" className="text-sm select-none bg-zinc-800 pt-16 pb-16 px-5 w-full mb-15">
@@ -89,9 +120,9 @@ const Main = () => {
           <section className={`${conversation.length === 0 ? '' : 'hidden'} transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-10 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
            {[
-              {content: "Create a Cartoon Illustration of my Pet"},
+              {content: "Teach me Typescript and React"},
               {content: "Summarize a Long Document or Poem"},
-              {content: "Generate a Logo for my Brand"},
+              {content: "List some tips on how to succeed in life"},
               {content: "How do I land my First Tech Job"},
             ].map((prompt, index) => (
             <div key="index">
