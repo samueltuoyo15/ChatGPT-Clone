@@ -6,7 +6,17 @@ const config: Config = {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'bounce-sequential': 'bounce-sequential 1.5s infinite',
+      },
+      keyframes: {
+        'bounce-sequential': {
+          '0%, 80%, 100%': { transform: 'scale(0)' },
+          '40%': { transform: 'scale(1)' },
+        },
+      },
+    },
   },
   plugins: [],
 }

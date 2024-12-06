@@ -1,69 +1,63 @@
 import jwt from "jsonwebtoken";
-import bcryptjs from "bcryptjs";
 import dotenv from "dotenv";
 import User from "../models/User.js";
 dotenv.config();
 
 export const registerUser = async (req, res) => {
-  try{
-    const {email, password} = req.body;
-    const existingUser = await User.findOne({email});
-    if(existingUser){
-      res.status(400).json({message: email + ' already exist'});
+  try {
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: `${email} already exists` });
     }
-    
-    const encryptedPassword = await bcrypt.hash(password, 17);
-    
-    const newUser = User.create({
-      email,
-      password: encryptedPassword,
-    });
-    
-    const token = jwt.sign({userId: newUser_.id}, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_SECRET_EXPIRES_IN,
-    });
-    
-    res.status(200).json({
-      message: "User was Created Successfully",
+
+    const newUser = await User.create({ email });
+    const token = jwt.sign(
+      { userId: newUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN }
+    );
+
+    return res.status(201).json({
+      message: "User was created successfully",
       success: true,
       token,
       user: {
-        id: newUser_id,newUser_id,
-        email: user.email,
+        id: newUser._id,
+        email: newUser.email,
       },
-    })
-  }catch(error){
-    res.status(500).json({message: "internal server error"})
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body
-    
-    const user = await User.findOne({ email })
+    const { email } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' })
+      return res.status(400).json({ message: email +" User does not exist" });
     }
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Invalid email or password' })
-    }
-    
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_SECRET_EXPIRES_IN,
-    })
-    
-    res.status(200).json({
-      message: 'User Logged In Successfully',
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN }
+    );
+
+    return res.status(200).json({
+      message: "User logged in successfully",
       success: true,
-      token,user: {
-        id: newUser_id,newUser_id,
+      token,
+      user: {
+        id: user._id,
         email: user.email,
       },
-    })
-  } catch(error){
-    res.status(500).json({message: "internal server error"})
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-}
+};

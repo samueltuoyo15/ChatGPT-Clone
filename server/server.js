@@ -12,9 +12,10 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 const app = express();
 
+app.use(cors())
 app.use(express.json());
 app.use("/auth", authRoute)
-app.use(cors())
+
 connectDb();
 app.post('/generate-content', async (req, res) => {
   const { prompt } = req.body;
