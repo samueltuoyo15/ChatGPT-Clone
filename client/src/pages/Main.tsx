@@ -85,17 +85,26 @@ const Main = () => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [conversation]);
+   
+   
+   const toggleNav = () => {
+    setShowSettings((prev) => !prev);
+  };
 
+  const closeNav = () => {
+    setShowSettings(false);
+  };
+  
   return (
     <>
-      <Navbar isOpen={showSettings} />
+      <Navbar isOpen={showSettings} closeNav={closeNav}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
-            <FaBars className="md:hidden z-[1000] block text-white" onClick={() => setShowSettings((prev) => !prev)} />
+            <FaBars className="md:hidden z-[1000] block text-white" onClick={toggleNav} />
             <div className="flex items-center bg-zinc-500 rounded py-1 px-3">
-              <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
-              <IoIosArrowDown className="ml-2" />
+               <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
+               <IoIosArrowDown className="ml-2" />
             </div>
             <FaRegEdit className="text-white" />
           </>
@@ -113,9 +122,9 @@ const Main = () => {
         )}
       </header>
 
-      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 pb-16 px-5 w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
+      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 md:ml-40 overflow-x-hidden pb-16 px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
         <div ref={chatContainerRef} className="mb-48">
-          <section className={`${conversation.length === 0 ? "" : "hidden"} overflow-x-hidden max-w-full transform mx-auto md:ml-44 translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
+          <section className={`${conversation.length === 0 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto md:ml-44 translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
             {[
               { content: "Teach me Typescript and React"},
@@ -182,7 +191,7 @@ const Main = () => {
         </div>
       </div>
 
-      <footer className="text-sm select-none bg-zinc-800 p-5 fixed bottom-0 w-full md:w-10/12 md:left-52">
+      <footer className="text-sm select-none bg-zinc-800 p-5 fixed bottom-0 w-full md:w-10/12 md:left-48 md:right-80">
         <form onSubmit={handleGenerate} className="relative">
           <div className="relative">
             <textarea
