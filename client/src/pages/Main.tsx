@@ -96,7 +96,7 @@ const Main = () => {
   };
   
   return (
-    <section className="bg-zinc-800">
+    <section className="min-h-screen font-sans bg-zinc-800">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
@@ -122,7 +122,7 @@ const Main = () => {
         )}
       </header>
 
-      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 md:ml-40 overflow-x-hidden pb-16 px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
+      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 md:ml-40 overflow-x-hidden pb-16 font-san px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
         <div ref={chatContainerRef} className="mb-48">
           <section className={`${conversation.length === 0 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto md:ml-44 translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
@@ -159,7 +159,7 @@ const Main = () => {
                       <div className="ml-10">
                         <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
                         <FaVolumeUp
-                          className="inline mt-4 text-sm text-white ml-3"
+                          className="inline mt-4 text-sm text-white ml-5"
                           onClick={() => {
                             const speech = new SpeechSynthesisUtterance(chat.message);
                             speech.volume = 1;
@@ -168,7 +168,7 @@ const Main = () => {
                           }}
                         />
                         <FaShareAlt
-                          className="inline text-white mt-4 ml-3 text-sm"
+                          className="inline text-white mt-4 ml-5 text-sm"
                           onClick={() => {
                             const shareData = {
                               title: "Chat GPT Clone By Samuel Tuoyo",

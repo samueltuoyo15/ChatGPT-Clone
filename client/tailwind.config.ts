@@ -10,6 +10,9 @@ const config: Config = {
       animation: {
         'bounce-sequential': 'bounce-sequential 1.5s infinite',
       },
+      fontFamily:{
+        sans: ['Inter', 'sans-serif'],
+      },
       keyframes: {
         'bounce-sequential': {
           '0%, 80%, 100%': { transform: 'scale(0)' },
