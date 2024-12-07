@@ -1,183 +1,188 @@
-import {Link} from "react-router-dom";
-import { useState, useEffect, useRef } from 'react'
-import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from 'react-icons/fa'
-import { IoIosArrowDown } from 'react-icons/io'
-import ReactMarkdown from 'react-markdown'
-import loadingGif from '/loading.gif'
-import Loader from '../components/Loader'
-import Navbar from '../components/Navbar'
-const Main = () => {
-  const [input, setInput] = useState<string>('')
-  const [loading, setLoading] = useState<string>(false)
-  const [quickPrompt, setQuickPrompt] = useState<string>(false)
-  const [conversation, setConversation] = useState<any []>([])
-  const chatContainerRef = useRef<boolean>(null)
-  const sendButtonRef = useRef<null>(null)
-  const [session, setSession] = useState<any[]>([])
-  const [showSettings, setShowSettings] = useState<boolean>(false)
- 
-   useEffect(() => {
-  const user = localStorage.getItem('user');
-  if (user) {
-    try {
-      const parsedUser = JSON.parse(user); 
-      setSession(Array.isArray(parsedUser) ? parsedUser : [parsedUser]); 
-    } catch (error) {
-      console.error("Error parsing user from localStorage:", error);
-      setSession([]); 
-    }
-  } else {
-    setSession([]); 
-  }
-}, []);
+import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from "react-icons/fa";
+import { IoIosArrowDown } from "react-icons/io";
+import ReactMarkdown from "react-markdown";
+import loadingGif from "/loading.gif";
+import Loader from "../components/Loader";
+import Navbar from "../components/Navbar";
 
-  
-   useEffect(() => {
-   const savedChats = localStorage.getItem("conversation");
-     if (savedChats) {
-    try {
-      setConversation(JSON.parse(savedChats));
-      window.scrollTo({top: document.body.scrollHeight, behavior: "smooth" });
+const Main = () => {
+  const [input, setInput] = useState<string>("");
+  const [loading, setLoading] = useState<string>(false);
+  const [quickPrompt, setQuickPrompt] = useState<string>(false);
+  const [conversation, setConversation] = useState<any[]>([]);
+  const chatContainerRef = useRef<boolean>(null);
+  const sendButtonRef = useRef<null>(null);
+  const [session, setSession] = useState<any[]>([]);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        setSession(Array.isArray(parsedUser) ? parsedUser : [parsedUser]);
       } catch (error) {
-      console.error('Error parsing conversation from localStorage:', error);
-      localStorage.removeItem("conversation"); 
+        setSession([]);
+      }
+    } else {
+      setSession([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedChats = localStorage.getItem("conversation");
+    if (savedChats) {
+      try {
+        setConversation(JSON.parse(savedChats));
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      } catch (error) {
+        localStorage.removeItem("conversation");
       }
     }
   }, []);
 
-   useEffect(() => {
-     if (conversation.length > 0) {
-    localStorage.setItem("conversation", JSON.stringify(conversation));
-      }
-    }, [conversation]);
-  
+  useEffect(() => {
+    if (conversation.length > 0) {
+      localStorage.setItem("conversation", JSON.stringify(conversation));
+    }
+  }, [conversation]);
+
   const handleGenerate = async (e) => {
-  e.preventDefault();
-  if(!input.trim()){
-    return
-  }
-  setConversation((prev) => [...prev, { sender: 'user', message: input }]);
-  setLoading(true);
+    e.preventDefault();
+    if (!input.trim()) {
+      return;
+    }
+    setConversation((prev) => [...prev, { sender: "user", message: input }]);
+    setLoading(true);
 
-  try {
-    const res = await fetch(import.meta.env.VITE_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: input, 
-      }),
-    });
+    try {
+      const res = await fetch(import.meta.env.VITE_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: input,
+        }),
+      });
 
-    const data = await res.json();
-    setConversation((prev) => [...prev, { sender: 'ai', message: data?.response }]);
-    window.scrollTo({top: document.body.scrollHeight, behavior: "smooth" })
-  } catch (error) {
-    console.error('Error fetching content:', error);
-    setConversation((prev) => [...prev, { sender: 'ai', message: 'Error generating content.' }]);
-  } finally {
-    setLoading(false);
-  }
+      const data = await res.json();
+      setConversation((prev) => [...prev, { sender: "ai", message: data?.response }]);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    } catch (error) {
+      setConversation((prev) => [...prev, { sender: "ai", message: "Error generating content." }]);
+    } finally {
+      setLoading(false);
+    }
 
-  setInput('');  
-};
+    setInput("");
+  };
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [conversation])
+  }, [conversation]);
 
   return (
     <>
-      <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 z-10 flex justify-between items-center">
+      <Navbar isOpen={showSettings} />
+      <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
-        <>
-        <FaBars className="text-white" onClick=/>
-        <div className="flex items-center bg-zinc-500 rounded py-1 px-3">
-          <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
-          <IoIosArrowDown className="ml-2" />
-        </div>
-        <FaRegEdit className="text-white" />
-        </>
-        )
-         :(
-         <>
-          <FaRegEdit className="text-white" />
-         <div className="flex items-center">
-          <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
-          <IoIosArrowDown className="ml-2" />
-        </div>
-        <Link to="login" className="rounded-2xl px-2 text-black bg-white">Login</Link>
-         </>
-          )
-        }
+          <>
+            <FaBars className="md:hidden z-[1000] block text-white" onClick={() => setShowSettings((prev) => !prev)} />
+            <div className="flex items-center bg-zinc-500 rounded py-1 px-3">
+              <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
+              <IoIosArrowDown className="ml-2" />
+            </div>
+            <FaRegEdit className="text-white" />
+          </>
+        ) : (
+          <>
+            <FaRegEdit className="text-white" />
+            <div className="flex items-center">
+              <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
+              <IoIosArrowDown className="ml-2" />
+            </div>
+            <Link to="login" className="rounded-2xl px-2 text-black bg-white">
+              Login
+            </Link>
+          </>
+        )}
       </header>
 
-      <div id="container" className="text-sm select-none bg-zinc-800 pt-16 pb-16 px-5 w-full mb-15">
+      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 pb-16 px-5 w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
         <div ref={chatContainerRef} className="mb-48">
-          <section className={`${conversation.length === 0 ? '' : 'hidden'} transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-10 items-center`}>
+          <section className={`${conversation.length === 0 ? "" : "hidden"} overflow-x-hidden max-w-full transform mx-auto md:ml-44 translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
-           {[
-              {content: "Teach me Typescript and React"},
-              {content: "Summarize a Long Document or Poem"},
-              {content: "List some tips on how to succeed in life"},
-              {content: "How do I land my First Tech Job"},
+            {[
+              { content: "Teach me Typescript and React"},
+              { content: "Summarize a Long Document or Poem"},
+              { content: "List some tips on how to succeed in life" },
+              { content: "How do I land my First Tech Job"},
             ].map((prompt, index) => (
-            <div key="index">
-            <div onClick={() => {
-              setInput(prompt.content)
-              handleGenerate({ preventDefault: () => {} }) // Simulate form submission
-            }} className="flex items-center h-16 p-3 border-2 border-zinc-700 shadow-4xl text-white md:mb-0 mb-3 rounded-2xl">
-              {prompt.content}
-            </div>
-            </div>
+              <div key={index}>
+                <div
+                  onClick={() => {
+                    setInput(prompt.content);
+                    handleGenerate({ preventDefault: () => {} });
+                  }}
+                  className={`flex items-center h-16 p-3 border-2 border-zinc-700 shadow-4xl text-white md:mb-0 mb-3 rounded-2xl`}
+                >
+                  {prompt.content}
+                </div>
+              </div>
             ))}
           </section>
           {conversation.map((chat, index) => {
-            const isUserMessage = chat.sender === 'user'
-            const isAIMessage = chat.sender === 'ai'
+            const isUserMessage = chat.sender === "user";
+            const isAIMessage = chat.sender === "ai";
 
             return (
-              <div key={index} className={isUserMessage ? 'bg-zinc-700 text-white rounded-2xl w-fit max-w-[70%] px-4 py-3 text-white mt-7 ml-auto' : 'bg-transparent text-white w-full p-2 mt-5'}>
+              <div key={index} className={isUserMessage ? "bg-zinc-700 text-white rounded-2xl w-fit max-w-[70%] px-4 py-3 text-white mt-7 ml-auto" : "bg-transparent text-white w-full p-2 mt-5"}>
                 {isAIMessage ? (
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
-                      <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
-                        {chat.message}
-                      </ReactMarkdown>
-                     <div className="ml-10">
-                     <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
-                      <FaVolumeUp className="inline mt-4 text-sm text-white ml-3" onClick={() => {
-                        const speech = new SpeechSynthesisUtterance(chat.message)
-                        speech.volume = 1
-                        speech.rate = 1
-                        speechSynthesis.speak(speech)
-                      }} />
-                      <FaShareAlt className="inline text-white mt-4 ml-3 text-sm" onClick={() => {
-                        const shareData = {
-                          title: 'Chat Assistant',
-                          text: chat.message,
-                          url: "https://ai-chat-assistant-nu.vercel.app/"
-                        }
-                        navigator.share(shareData)
-                      }} />
-                     </div>
+                      <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">{chat.message}</ReactMarkdown>
+                      <div className="ml-10">
+                        <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
+                        <FaVolumeUp
+                          className="inline mt-4 text-sm text-white ml-3"
+                          onClick={() => {
+                            const speech = new SpeechSynthesisUtterance(chat.message);
+                            speech.volume = 1;
+                            speech.rate = 1;
+                            speechSynthesis.speak(speech);
+                          }}
+                        />
+                        <FaShareAlt
+                          className="inline text-white mt-4 ml-3 text-sm"
+                          onClick={() => {
+                            const shareData = {
+                              title: "Chat GPT Clone By Samuel Tuoyo",
+                              text: chat.message,
+                              url: "/",
+                            };
+                            navigator.share(shareData);
+                          }}
+                        />
+                      </div>
                     </div>
                   </>
                 ) : (
                   <p>{chat.message}</p>
                 )}
               </div>
-            )
+            );
           })}
           {loading && <Loader />}
         </div>
       </div>
 
-      <footer className="text-sm select-none bg-zinc-800 p-5 fixed bottom-0 w-full md:w-10/12 md:left-16">
+      <footer className="text-sm select-none bg-zinc-800 p-5 fixed bottom-0 w-full md:w-10/12 md:left-52">
         <form onSubmit={handleGenerate} className="relative">
           <div className="relative">
             <textarea
@@ -188,18 +193,14 @@ const Main = () => {
             />
           </div>
 
-          <button
-            ref={sendButtonRef}
-            type="submit"
-            className="absolute top-2 right-2 bg-zinc-700 h-10 w-10 text-xl rounded-full text-white z-10"
-          >
+          <button ref={sendButtonRef} type="submit" className="absolute top-2 right-2 bg-zinc-700 h-10 w-10 text-xl rounded-full text-white z-10">
             <FaArrowUp className="inline" />
           </button>
         </form>
         <div className="mt-2 text-gray-400 text-sm line-clamp-1 md:line-clamp-none text-white text-center">ChatGPT can make mistakes. Check for important info</div>
       </footer>
     </>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;
