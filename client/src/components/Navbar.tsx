@@ -1,5 +1,6 @@
-const Navbar = ({ isOpen, closeNav}) => {
-  return (
+const Navbar = ({ isOpen, session, closeNav}) => {
+   console.log(session)
+   return (
     <nav
       className={`h-full fixed w-52 top-0 left-0 bg-zinc-700 z-10 transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
@@ -12,7 +13,13 @@ const Navbar = ({ isOpen, closeNav}) => {
         >
           ✕
         </button>
-        <div className="flex-grow flex justify-center items-center">Navbar</div>
+        <div className="flex-grow flex p-3"><strong>Today</strong></div>
+      {session.map((se) => (
+         <div key={session[0].id} className="self-end flex w-full block justify-evenly items-center mb-5">
+        <img src="/user.png" className="w-10 rounded-full" />
+        <p>{session[0].email.split("@")[0]}</p>
+        </div>
+        ))}
       </div>
     </nav>
   );

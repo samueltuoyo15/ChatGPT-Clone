@@ -96,8 +96,8 @@ const Main = () => {
   };
   
   return (
-    <>
-      <Navbar isOpen={showSettings} closeNav={closeNav}/>
+    <section className="bg-zinc-800">
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
@@ -208,7 +208,7 @@ const Main = () => {
         </form>
         <div className="mt-2 text-gray-400 text-sm line-clamp-1 md:line-clamp-none text-white text-center">ChatGPT can make mistakes. Check for important info</div>
       </footer>
-    </>
+    </section>
   );
 };
 
