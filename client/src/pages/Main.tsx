@@ -32,21 +32,39 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    const savedChats = localStorage.getItem("conversation");
-    if (savedChats) {
+    const getConv = async () => {
       try {
-        setConversation(JSON.parse(savedChats));
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      } catch (error) {
-        localStorage.removeItem("conversation");
-      }
+      const res = await fetch(`import.meta.env.VITE_GETCONV_URL?query=${session[0].email}`)
+     const data = await res.json();
+     setConversation(data);
+     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+     console.log(data)
+   } catch (error) {
+     console.error(error)
     }
+  }
+    getConv();
   }, []);
 
   useEffect(() => {
-    if (conversation.length > 0) {
-      localStorage.setItem("conversation", JSON.stringify(conversation));
+    const saveConv = async () => {
+      try {
+      const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: session[0].email, conversation}),
+      });
+
+     const data = await res.json();
+     console.log(data)
+   } catch (error) {
+     console.error(error)
     }
+  }
+    saveConv();
+  
   }, [conversation]);
 
   const handleGenerate = async (e) => {
