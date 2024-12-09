@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoute from './routes/authRoute.js';
+import chatRoutes from './routes/chatRoutes.js';
 import dotenv from 'dotenv';
 import connectDb from './db/mongoose.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -15,6 +16,7 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 app.use("/auth", authRoute)
+app.use("/chats", chatRoutes)
 
 connectDb();
 app.post('/generate-content', async (req, res) => {

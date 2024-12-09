@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User from '../models/User.js';
 
 export const saveConversation = async (req, res) => {
   const { email, conversation } = req.body;
@@ -14,7 +14,7 @@ export const saveConversation = async (req, res) => {
   }
 }
 
-export const getConversations = () => {
+export const getConversations = async () => {
   const { email } = req.query;
   try{
     const user = await User.findOne({email});
