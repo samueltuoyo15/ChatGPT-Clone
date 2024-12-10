@@ -9,11 +9,11 @@ import Navbar from "../components/Navbar";
 
 const Main = () => {
   const [input, setInput] = useState<string>("");
-  const [loading, setLoading] = useState<string>(false);
-  const [quickPrompt, setQuickPrompt] = useState<string>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [quickPrompt, setQuickPrompt] = useState<boolean>(false);
   const [conversation, setConversation] = useState<any[]>([]);
-  const chatContainerRef = useRef<boolean>(null);
-  const sendButtonRef = useRef<null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<any[]>([]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ const Main = () => {
      const data = await res.json();
      setConversation(data);
      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-     console.log(data)
+     console.log(JSON.parse(data))
    } catch (error) {
      console.error(error)
     }
@@ -47,6 +47,7 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
+    if(conversation.length === 0) return;
     const saveConv = async () => {
       try {
       const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
@@ -54,11 +55,11 @@ const Main = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({email: session[0].email, conversation}),
+        body: JSON.stringify({email: session[0].email, conversation : conversation}),
       });
 
      const data = await res.json();
-     console.log(data)
+     console.log(JSON.parse(data))
    } catch (error) {
      console.error(error)
     }
