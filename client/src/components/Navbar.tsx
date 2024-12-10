@@ -1,5 +1,11 @@
-const Navbar = ({ isOpen, session, closeNav}) => {
-   console.log(session)
+import {useState} from "react";
+const Navbar = ({conversation, isOpen, session, closeNav}) => {
+  const [currentConvId, setCurrentConvId] = useState<boolean>(null);
+
+  const handleConversationSelect = (id) => {
+    setCurrentConvId(id);
+    setIsOpen(false);
+  };
    return (
     <nav
       className={`h-full font-sans fixed w-52 top-0 left-0 bg-zinc-700 z-10 transition-transform ${
@@ -14,6 +20,11 @@ const Navbar = ({ isOpen, session, closeNav}) => {
           ✕
         </button>
         <div className="flex-grow flex p-3"><strong>Today</strong></div>
+        {conversation.map((conv) => (
+         <div key={conv.id}>
+           <span>{conv}</span>
+         </div>
+        ))}
       {session.map((se) => (
          <div key={session[0].id} className="self-end flex w-full block justify-evenly items-center mb-5">
         <img src="/user.png" className="w-10 rounded-full" />

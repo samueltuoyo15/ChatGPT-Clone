@@ -2,7 +2,7 @@ import {saveConversation, getConversations} from '../controllers/chatController.
 import express from 'express';
 const router = express.Router();
 
-router.post('/fetchChats', getConversations);
+router.get('/fetchChats', getConversations);
 router.post('/saveChats', saveConversation);
 
 export default router;

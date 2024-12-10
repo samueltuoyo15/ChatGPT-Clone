@@ -16,10 +16,12 @@ export const saveConversation = async (req, res) => {
 
 export const getConversations = async (req, res) => {
   const { email } = req.query;
+  console.log(email)
   try{
     const user = await User.findOne({email});
     if(!user) return res.status(404).json({message: 'user not found'});
     res.status(200).json(user.conversation);
+    console.log(user.conversation)
   }catch(error){
     console.error(error);
     res.status(500).json({message: 'internal server error'});

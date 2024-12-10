@@ -31,23 +31,33 @@ const Main = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const getConv = async () => {
-      try {
-      const res = await fetch(`import.meta.env.VITE_GETCONV_URL?query=${session[0].email}`)
-     const data = await res.json();
-     setConversation(data);
-     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-     console.log(JSON.parse(data))
-   } catch (error) {
-     console.error(error)
+useEffect(() => {
+  const getConv = async () => {
+    console.log("Session:", session);
+    if (!session || !session[0]?.email) {
+      console.error("Session or email is undefined");
+      return;
     }
-  }
-    getConv();
-  }, []);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_GETCONV_URL}?email=${session[0].email}`
+      );
+      const data = await res.json();
+      setConversation(data);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  getConv();
+}, [session]);
+
 
   useEffect(() => {
-    if(conversation.length === 0) return;
+    if(conversation.length === 0 || !session[0]?.email) return;
     const saveConv = async () => {
       try {
       const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
@@ -59,7 +69,7 @@ const Main = () => {
       });
 
      const data = await res.json();
-     console.log(JSON.parse(data))
+     console.log(data)
    } catch (error) {
      console.error(error)
     }
@@ -116,7 +126,7 @@ const Main = () => {
   
   return (
     <section className="min-h-screen font-sans bg-zinc-800">
-      <Navbar isOpen={showSettings} closeNav={closeNav} session={session}/>
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversation={conversation}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
