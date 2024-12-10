@@ -16,7 +16,7 @@ const Main = () => {
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<any[]>([]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
-
+  const [currentConversation, setCurrentConversation] = useState<{conversationId: number, messages: any} | null>(null);
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -31,9 +31,8 @@ const Main = () => {
     }
   }, []);
 
-useEffect(() => {
-  const getConv = async () => {
-    console.log("Session:", session);
+   useEffect(() => {
+   const getConv = async () => {
     if (!session || !session[0]?.email) {
       console.error("Session or email is undefined");
       return;
@@ -55,28 +54,36 @@ useEffect(() => {
   getConv();
 }, [session]);
 
-
   useEffect(() => {
-    if(conversation.length === 0 || !session[0]?.email) return;
-    const saveConv = async () => {
-      try {
+  const saveConversation = async () => {
+    if (!currentConversation?.messages?.length) return;
+
+    try {
       const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({email: session[0].email, conversation : conversation}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session[0]?.email,
+          conversation: currentConversation,
+        }),
       });
-
-     const data = await res.json();
-     console.log(data)
-   } catch (error) {
-     console.error(error)
+      const data = await res.json();
+      console.log("Conversation saved:", data);
+    } catch (error) {
+      console.error("Error saving conversation:", error);
     }
-  }
-    saveConv();
-  
-  }, [conversation]);
+  };
+
+  saveConversation(); 
+}, [currentConversation]);
+
+
+  const startNewConversation = () => {
+      setCurrentConversation({
+    conversationId: Date.now(),
+    messages: [],
+  });
+};
 
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -126,7 +133,7 @@ useEffect(() => {
   
   return (
     <section className="min-h-screen font-sans bg-zinc-800">
-      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation}/>
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation || []} />
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
@@ -135,9 +142,10 @@ useEffect(() => {
                <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
                <IoIosArrowDown className="ml-2" />
             </div>
-            <FaRegEdit className="text-white" />
+            <FaRegEdit className="text-white" onClick={startNewConversation}/>
           </>
         ) : (
+ 
           <>
             <FaRegEdit className="text-white"/>
             <div className="flex items-center">

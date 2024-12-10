@@ -1,6 +1,11 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
-const SignUp = ({setIsAuthenticated}) => {
+
+interface SignUpProps {
+  setIsAuthenticated: (isAuthenticated: boolean) => void
+}
+
+const SignUp = ({setIsAuthenticated}: SignUpProps) => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const navigate = useNavigate()
