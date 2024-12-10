@@ -126,7 +126,7 @@ useEffect(() => {
   
   return (
     <section className="min-h-screen font-sans bg-zinc-800">
-      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversation={conversation}/>
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
@@ -139,7 +139,7 @@ useEffect(() => {
           </>
         ) : (
           <>
-            <FaRegEdit className="text-white" />
+            <FaRegEdit className="text-white"/>
             <div className="flex items-center">
               <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
               <IoIosArrowDown className="ml-2" />
