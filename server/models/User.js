@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema({
 
 const conversationSchema = new mongoose.Schema({
   groupName: { type: String, required: true },
-  participants: [{ type: String }], // Array of participant emails
+  participants: [{ type: String }], 
   messages: [messageSchema],
 });
 

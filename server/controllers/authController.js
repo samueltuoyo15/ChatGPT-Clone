@@ -4,11 +4,11 @@ import User from "../models/User.js";
 dotenv.config();
 
 export const registerUser = async (req, res) => {
+  const { email } = req.body;
   try {
-    const { email } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: `${email} already exists` });
+      return res.status(400).json({ message: `${email} user already exists` });
     }
 
     const newUser = await User.create({ email });
@@ -34,8 +34,8 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
+  const { email } = req.body;
   try {
-    const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: email +" User does not exist" });

@@ -20,14 +20,15 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       body: JSON.stringify({email}),
       });
       const data = await response.json()
+      if (!response.ok) {  
+        throw new Error(data.message)
+        setError(data.message)
+      }
       setIsAuthenticated(true)
       localStorage.setItem('isAuthenticated', 'true')
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('token', data.token)
       window.location.href = "/";
-      if (!response.ok) {  
-        throw new Error(data.message)
-      }
     } catch(error :any){
       setError(error.message)  
       console.error(error)
@@ -49,6 +50,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
         <input type="submit" value="Continue" className="block rounded text-white w-full p-3 bg-[#44BBA8]" />
        </fieldset>
        </form>
+       {error && <p className="text-red-500">{error}</p>}
        <div className="mt-7">
        <p>Dont have an account? <Link to="/signup" className="text-[#44BBA4]">Sign Up</Link></p>
       </div>

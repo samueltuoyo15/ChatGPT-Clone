@@ -1,9 +1,31 @@
 import { useState } from "react";
 
-const Navbar = ({ conversations = [], isOpen, session, closeNav }) => {
-  const [currentConvId, setCurrentConvId] = useState(null);
+interface Conversation {
+  id: string;
+  message?: string;
+}
 
-  const handleConversationSelect = (id) => {
+interface Group {
+  conversatio: string;
+  participants: Conversation[];
+}
+
+interface User {
+  id: string;
+  email: string;
+}
+
+interface NavbarProps {
+  conversations: Group[];
+  isOpen: boolean;
+  session: User[];
+  closeNav: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNav }) => {
+  const [currentConvId, setCurrentConvId] = useState<string | null>(null);
+
+  const handleConversationSelect = (id: string) => {
     setCurrentConvId(id);
     closeNav();
   };
@@ -35,7 +57,7 @@ const Navbar = ({ conversations = [], isOpen, session, closeNav }) => {
               <div key={index}>
                 {/* Group Header */}
                 <div className="px-4 py-2 bg-zinc-900 text-sm font-semibold">
-                  {group.conversation || "Unnamed Group"}
+                  {group.conversatio || "Unnamed Group"}
                 </div>
                 {/* Grouped Conversations */}
                 {group.participants && group.participants.length > 0 ? (

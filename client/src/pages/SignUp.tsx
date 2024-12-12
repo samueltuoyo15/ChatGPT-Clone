@@ -19,14 +19,15 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
       body: JSON.stringify({email}),
       });
       const data = await response.json()
+      if (!response.ok) {  
+        throw new Error(data.message)
+        setError(data.message)
+      }
       setIsAuthenticated(true)
       localStorage.setItem('isAuthenticated', 'true')
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('token', data.token)
       window.location.href = "/";
-      if (!response.ok) {  
-        throw new Error(data.message)
-      }
     } catch(error :any){
       setError(error.message)  
       console.error(error)

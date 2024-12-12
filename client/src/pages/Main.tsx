@@ -79,13 +79,13 @@ const Main = () => {
 
 
   const startNewConversation = () => {
-      setCurrentConversation({
+    setCurrentConversation({
     conversationId: Date.now(),
     messages: [],
   });
 };
 
-  const handleGenerate = async (e) => {
+  const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) {
       return;
@@ -173,7 +173,7 @@ const Main = () => {
                 <div
                   onClick={() => {
                     setInput(prompt.content);
-                    handleGenerate({ preventDefault: () => {} });
+                    handleGenerate({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>);
                   }}
                   className={`flex items-center h-16 p-3 border-2 border-zinc-700 shadow-4xl text-white md:mb-0 mb-3 rounded-2xl`}
                 >
