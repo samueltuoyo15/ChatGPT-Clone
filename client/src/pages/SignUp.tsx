@@ -7,6 +7,7 @@ interface SignUpProps {
 
 const SignUp = ({setIsAuthenticated}: SignUpProps) => {
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const navigate = useNavigate()
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -16,7 +17,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
       const response = await fetch(import.meta.env.VITE_SIGNUP_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email}),
+      body: JSON.stringify({email, password}),
       });
       const data = await response.json()
       if (!response.ok) {  
@@ -40,16 +41,24 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
       <strong className="block text-3xl mb-5 text-center">Create an account</strong>
       
       <form onSubmit={submitForm}>
-        <fieldset>
-         <legend className="text-left text-[#44BBA4]">Email address*</legend>
+        <label htmlFor="email" className="text-left block text-[#44BBA4]">Email address*</label>
         <input
+        id="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         type="email" 
         className="block w-full rounded p-3 border-2 border-[#44BBA4] mb-5" />
+        
+       <label htmlFor="password" className="text-left block text-[#44BBA4]">Password*</label>
+        <input
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        type="password" 
+        className="block w-full rounded p-3 border-2 border-[#44BBA4] mb-5" />
+     
         <input type="submit" value="Continue" className="block rounded text-white w-full p-3 bg-[#44BBA8]" />
          {error && (<p className="text-red-500">{error}</p>)}
-       </fieldset>
        </form>
        
        <div className="mt-5">

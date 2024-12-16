@@ -33,7 +33,7 @@ const Main = () => {
 
    useEffect(() => {
    const getConv = async () => {
-    if (!session || !session[0]?.email) {
+    if (!session) {
       console.error("Session or email is undefined");
       return;
     }
@@ -63,7 +63,7 @@ const Main = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: session[0]?.email,
+          email: session[0].email,
           conversation: currentConversation,
         }),
       });

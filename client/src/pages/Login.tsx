@@ -8,6 +8,7 @@ interface LoginProps {
 
 const Login = ({setIsAuthenticated}: LoginProps) => {
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const navigate = useNavigate()
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +18,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       const response = await fetch(import.meta.env.VITE_SIGNIN_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email}),
+      body: JSON.stringify({email, password}),
       });
       const data = await response.json()
       if (!response.ok) {  
@@ -40,15 +41,23 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       <strong className="block text-3xl mb-5 text-center">Welcome back</strong>
       
       <form onSubmit={submitForm}>
-        <fieldset>
-         <legend className="text-left text-[#44BBA4]">Email address*</legend>
-        <input 
+       <label htmlFor="email" className="text-left block text-[#44BBA4]">Email address*</label>
+        <input
+        id="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        type="email"
+        type="email" 
         className="block w-full rounded p-3 border-2 border-[#44BBA4] mb-5" />
+        
+       <label htmlFor="password" className="text-left block text-[#44BBA4]">Password*</label>
+        <input
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        type="password" 
+        className="block w-full rounded p-3 border-2 border-[#44BBA4] mb-5" />
+    
         <input type="submit" value="Continue" className="block rounded text-white w-full p-3 bg-[#44BBA8]" />
-       </fieldset>
        </form>
        {error && <p className="text-red-500">{error}</p>}
        <div className="mt-7">

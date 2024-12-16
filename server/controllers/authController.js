@@ -1,17 +1,19 @@
+import bcrypt from 'bcryptjs'
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/User.js";
 dotenv.config();
 
 export const registerUser = async (req, res) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: `${email} user already exists` });
     }
-
-    const newUser = await User.create({ email });
+    const encryptedPassword = await bcrypt.hash(password, 10)
+  
+    const newUser = await User.create({ email, password: encryptedPassword });
     const token = jwt.sign(
       { userId: newUser._id },
       process.env.JWT_SECRET,
@@ -34,13 +36,17 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { email } = req.body;
+  const { email, password} = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: email +" User does not exist" });
     }
-
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid email or password' })
+    }
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
