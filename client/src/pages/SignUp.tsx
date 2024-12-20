@@ -1,5 +1,6 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface SignUpProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void
@@ -9,6 +10,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const {loginWithRedirect, loginWithPopup} = useAuth0();
   const navigate = useNavigate()
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -35,6 +37,14 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
     }
   }
   
+  const handleSocialAuth = async (provider<string>) => {
+    try{
+      await loginWithRedirect({connection: provider,})
+      console.log('Success')
+    }catch(error){
+      console.log(provider +' social login error ' + error)
+    }
+  }
   return(
     <section className="p-4 text-center">
       <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-10 mt-7 mx-auto mb-10"/>
@@ -73,7 +83,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
       
       {/* sign up with a auth provider*/}  
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialAuth('google-o-auth2')}
             className="border-2 mb-4 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/google.png" alt="Google logo" className="w-14" />
