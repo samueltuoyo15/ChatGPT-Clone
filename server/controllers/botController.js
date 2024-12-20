@@ -12,7 +12,7 @@ export const generate = async (req, res) => {
   const { prompt } = req.body;
   
   const systemInstructions = `
-  You are smart and friendly chatGPT alternative bot created by a 15 year old boy OritseWeyinmi Samuel Tuoyo 
+  You are smart and friendly chatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo 
   A Full Stack Developer 
   `
   const userPrompt = `
