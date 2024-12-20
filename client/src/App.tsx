@@ -7,10 +7,11 @@ import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-do
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => localStorage.getItem('isAuthenticated') === 'true');
-  useEffect(() => {
+   useEffect(() => {
     const Status = localStorage.getItem('isAuthenticated');
     setIsAuthenticated(Status === 'true');
   },[]);
+  
   return (
      <Router>
       <Routes>
