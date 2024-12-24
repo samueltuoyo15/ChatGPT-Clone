@@ -21,9 +21,9 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       body: JSON.stringify({email, password}),
       });
       const data = await response.json()
-      if (!response.ok) {  
-        throw new Error(data.message)
+      if (!response.ok) {
         setError(data.message)
+        throw new Error(data.message)
       }
       setIsAuthenticated(true)
       localStorage.setItem('isAuthenticated', 'true')

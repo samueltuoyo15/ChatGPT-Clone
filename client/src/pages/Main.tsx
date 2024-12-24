@@ -43,6 +43,7 @@ const Main = () => {
         `${import.meta.env.VITE_GETCONV_URL}?email=${session[0].email}`
       );
       const data = await res.json();
+      console.log('getchats '+data)
       setConversation(data);
       window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       console.log(data);
@@ -64,10 +65,11 @@ const Main = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: session[0].email,
-          conversation: currentConversation,
+          conversation: conversation,
         }),
       });
       const data = await res.json();
+      console.log('save cbats' +data)
       console.log("Conversation saved:", data);
     } catch (error) {
       console.error("Error saving conversation:", error);
@@ -79,10 +81,11 @@ const Main = () => {
 
 
   const startNewConversation = () => {
-    setCurrentConversation({
+  setCurrentConversation({
     conversationId: Date.now(),
     messages: [],
   });
+  setConversation([]); // Clear previous messages
 };
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -241,7 +244,8 @@ const Main = () => {
 
           <button ref={sendButtonRef} type="submit" className="absolute top-2 right-2 bg-zinc-700 h-10 w-10 text-xl rounded-full text-white z-10">
             <FaArrowUp className="inline" />
-          </button>
+          </button
+>
         </form>
         <div className="mt-2 text-gray-400 text-sm line-clamp-1 md:line-clamp-none text-white text-center">ChatGPT can make mistakes. Check for important info</div>
       </footer>
