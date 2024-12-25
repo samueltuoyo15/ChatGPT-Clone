@@ -47,25 +47,25 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         </div>
 
         {/* Conversations List */}
-        <div className="flex-grow overflow-y-auto">
-          {conversations.length > 0 ? (
-            conversations.map((conv) => (
-              <div
-                key={conv._id}
-                onClick={() => handleConversationSelect(conv._id)}
-                className={`px-4 py-3 cursor-pointer hover:bg-zinc-700 ${
-                  currentConvId === conv._id ? "bg-zinc-700" : ""
-                }`}
-              >
-                <p className="truncate">
-                  {conv.groupName || "Untitled Conversation"}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="px-4 py-3 text-sm text-zinc-400">No conversations yet</p>
-          )}
-        </div>
+      <div className="flex-grow overflow-y-auto">
+  {conversations.length > 0 ? (
+    conversations.map((conv) => (
+      <div
+        key={conv._id}
+        onClick={() => handleConversationSelect(conv._id)}
+        className={`px-4 py-3 cursor-pointer hover:bg-zinc-700 ${
+          currentConvId === conv._id ? "bg-zinc-700" : ""
+        }`}
+      >
+        <p className="truncate">
+          {conv.groupName || ""}
+        </p>
+      </div>
+    ))
+  ) : (
+    <p className="px-4 py-3 text-sm text-zinc-400">No conversations yet</p>
+  )}
+</div>
 
         {/* User Section */}
         {session && session.length > 0? (

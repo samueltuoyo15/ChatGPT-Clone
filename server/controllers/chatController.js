@@ -11,52 +11,48 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 // **Save Conversation**
 export const saveConversation = async (req, res) => {
   const { email, conversation } = req.body;
+console.log("Request body:", req.body);
+console.log("Finding user by email:", email);
+console.log("Saving conversation:", conversation);
+
+  if (!email || !conversation || !Array.isArray(conversation.messages)) {
+    return res.status(400).json({ message: "Invalid input data" });
+  }
 
   try {
-    // Validate input
-    if (!email || !conversation || !conversation.messages) {
-      return res.status(400).json({ message: 'Invalid input data' });
-    }
-
-    // Find the user
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Generate a unique title for the conversation based on the first 3 messages
-    const firstThreeMessages = conversation.messages.slice(0, 3).map(msg => msg.content).join(' ');
-    const titlePrompt = `Generate a concise and unique title for the following conversation snippet:\n\n"${firstThreeMessages}"`;
-    const titleResult = await model.generateContent(titlePrompt);
-    const groupName = titleResult.response.text().trim() || 'Untitled Conversation';
-
-    // Check for existing conversation by title
-    let existingConversation = await Conversation.findOne({ userId: user._id, groupName });
+    const existingConversation = await Conversation.findOne({
+      userId: user._id,
+      groupName: conversation.groupName || "Untitled Conversation",
+    });
 
     if (existingConversation) {
-      // Append new messages to the existing conversation
       existingConversation.messages.push(...conversation.messages);
+      await existingConversation.save();
     } else {
-      // Create a new conversation
-      existingConversation = new Conversation({
+      const newConversation = new Conversation({
         userId: user._id,
-        groupName,
+        groupName: conversation.groupName || "Untitled Conversation",
         messages: conversation.messages,
       });
-    }
-
-    await existingConversation.save();
-
-    // Add conversation reference to the user if it's new
-    if (!user.conversations.includes(existingConversation._id)) {
-      user.conversations.push(existingConversation._id);
+      await newConversation.save();
+      user.conversations.push(newConversation._id);
       await user.save();
     }
+    
+    console.log("Request body:", req.body);
+console.log("Finding user by email:", email);
+console.log("Saving conversation:", conversation);
 
-    res.status(200).json({ message: 'Conversation saved successfully', groupName });
+    res.status(200).json({ message: "Conversation saved successfully" });
   } catch (error) {
-    console.error('Error saving conversation:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error saving conversation:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // **Get Conversations**
 export const getConversations = async (req, res) => {

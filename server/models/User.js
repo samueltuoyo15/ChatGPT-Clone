@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema({
 
 const conversationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  groupName: { type: String, default: "Untitled Conversation" },
   messages: [messageSchema],
   createdAt: { type: Date, default: Date.now },
 });

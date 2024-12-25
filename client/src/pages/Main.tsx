@@ -7,6 +7,7 @@ import loadingGif from "/loading.gif";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 
+
 const Main = () => {
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,15 +58,16 @@ const Main = () => {
 
   useEffect(() => {
   const saveConversation = async () => {
-    if (!currentConversation?.messages?.length) return;
-
+    
     try {
       const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: session[0].email,
-          conversation: conversation,
+          conversation: {
+          messages: conversation, // Wrap messages in an object
+        },
         }),
       });
       const data = await res.json();
@@ -85,7 +87,7 @@ const Main = () => {
     conversationId: Date.now(),
     messages: [],
   });
-  setConversation([]); // Clear previous messages
+  setConversation([]);
 };
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
