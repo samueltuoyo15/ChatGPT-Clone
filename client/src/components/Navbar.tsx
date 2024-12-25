@@ -1,9 +1,10 @@
 import { useState } from "react";
+import NavBarModal from './NavBarModal';
 
 interface Conversation {
-  _id: string; // Matches MongoDB's ObjectId
-  groupName: string; // Title of the conversation
-  messages: { sender: string; content: string }[]; // Array of messages
+  _id: string; 
+  groupName: string; 
+  messages: { sender: string; content: string }[];
 }
 
 interface User {
@@ -14,13 +15,13 @@ interface User {
 interface NavbarProps {
   conversations: Conversation[];
   isOpen: boolean;
-  session: User | null; // Single user instead of an array
+  session: User | null; 
   closeNav: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNav }) => {
   const [currentConvId, setCurrentConvId] = useState<string | null>(null);
-
+  const [toggleSettings, setToggleSettings] = useState<boolean>(false);
   const handleConversationSelect = (id: string) => {
     setCurrentConvId(id);
     closeNav();
@@ -28,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 
   return (
     <nav
-      className={`h-full font-sans fixed w-52 top-0 left-0 bg-zinc-800 z-10 shadow-lg transition-transform ${
+      className={`h-full font-sans fixed w-64 top-0 left-0 bg-zinc-800 z-10 shadow-lg transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } md:translate-x-0 md:w-60`}
     >
@@ -68,14 +69,18 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 </div>
 
         {/* User Section */}
+        {toggleSettings && ( <NavBarModal session={session[0]?.email}/>)}
+        
         {session && session.length > 0? (
-          <div className="flex items-center px-4 py-3 bg-zinc-900 border-t border-zinc-700">
+          <div 
+          onClick={() => setToggleSettings(!toggleSettings)}
+          className="flex items-center px-4 py-3 bg-zinc-900 border-t border-zinc-700">
             <img
               src="/user.png"
               alt="User Avatar"
               className="w-8 h-8 rounded-full mr-3"
             />
-            <p className="text-sm font-medium truncate">{session[0]?.email.split("@")[0]}</p>
+            <p className="line-clamp-1 text-sm font-medium truncate">{session[0]?.email.split("@")[0]}</p>
           </div>
         ) : (
           <p className="px-4 py-3 text-sm text-zinc-400">No user data</p>
