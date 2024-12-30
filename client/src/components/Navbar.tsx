@@ -29,6 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 
   return (
     <nav
+     onClick={(e) => {if (e.target === e.currentTarget) closeNav()}}
       className={`h-full font-sans fixed w-64 top-0 left-0 bg-zinc-800 z-10 shadow-lg transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } md:translate-x-0 md:w-60`}
@@ -49,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 
         {/* Conversations List */}
       <div className="flex-grow overflow-y-auto">
-  {conversations.length > 0 ? (
+  {conversations.length > 1 ? (
     conversations.map((conv) => (
       <div
         key={conv._id}
@@ -59,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         }`}
       >
         <p className="truncate">
-          {conv.groupName || ""}
+          {conv[0]?.groupName || ""}
         </p>
       </div>
     ))
@@ -69,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 </div>
 
         {/* User Section */}
-        {toggleSettings && ( <NavBarModal session={session[0]?.email}/>)}
+        {toggleSettings && ( <NavBarModal session={session[0]?.email || null}/>)}
         
         {session && session.length > 0? (
           <div 

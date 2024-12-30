@@ -7,24 +7,23 @@ import loadingGif from "/loading.gif";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 
-
 const Main = () => {
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [quickPrompt, setQuickPrompt] = useState<boolean>(false);
   const [conversation, setConversation] = useState<any[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<any[]>([]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [currentConversation, setCurrentConversation] = useState<{conversationId: number, messages: any} | null>(null);
+  const [currentConversation, setCurrentConversation] = useState<{ conversationId: number; messages: any } | null>(null);
+
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
         setSession(Array.isArray(parsedUser) ? parsedUser : [parsedUser]);
-      } catch (error) {
+      } catch {
         setSession([]);
       }
     } else {
@@ -32,87 +31,88 @@ const Main = () => {
     }
   }, []);
 
-   useEffect(() => {
-   const getConv = async () => {
-    if (!session) {
-      console.error("Session or email is undefined");
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_GETCONV_URL}?email=${session[0].email}`
-      );
-      const data = await res.json();
-      console.log('getchats '+data)
-      setConversation(data);
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  getConv();
-}, [session]);
-
   useEffect(() => {
-  const saveConversation = async () => {
-    
-    try {
-      const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: session[0].email,
-          conversation: {
-          messages: conversation, // Wrap messages in an object
-        },
-        }),
-      });
-      const data = await res.json();
-      console.log('save cbats' +data)
-      console.log("Conversation saved:", data);
-    } catch (error) {
-      console.error("Error saving conversation:", error);
-    }
-  };
+    const saveConversation = async () => {
+      if (!session[0]?.email) return;
+      try {
+        const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: session[0]?.email,
+            conversation: { messages: conversation },
+          }),
+        });
+        await res.json();
+      } catch (error) {
+        console.error("Error saving conversation:", error);
+      }
+    };
 
-  saveConversation(); 
-}, [currentConversation]);
+    saveConversation();
+  }, [currentConversation]);
+  
+  useEffect(() => {
+  const getConv = async () => {
+  if (!session || !session[0]?.email) {
+    console.error("Session or email is undefined");
+    return;
+  }
 
-
-  const startNewConversation = () => {
-  setCurrentConversation({
-    conversationId: Date.now(),
-    messages: [],
-  });
-  setConversation([]);
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_GETCONV_URL}?email=${session[0]?.email}`
+    );
+    const data = await res.json();
+    console.log("Fetched conversations:", data);
+    setConversation(data);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
+  }
 };
+}, [session])
+  const startNewConversation = () => {
+    setCurrentConversation({ conversationId: Date.now(), messages: [] });
+    setConversation([]);
+  };
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim()) {
-      return;
-    }
+    if (!input.trim()) return;
+
     setConversation((prev) => [...prev, { sender: "user", message: input }]);
     setLoading(true);
 
     try {
       const res = await fetch(import.meta.env.VITE_BASE_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: input,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: input }),
       });
 
       const data = await res.json();
-      setConversation((prev) => [...prev, { sender: "ai", message: data?.response }]);
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-    } catch (error) {
+      const fullMessage = data.response;
+      let currentMessage = "";
+
+      for (let i = 0; i < fullMessage.length; i++) {
+        currentMessage += fullMessage[i];
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        setConversation((prev) => {
+          const updated = [...prev];
+          const aiIndex = updated.findIndex((msg) => msg.sender === "ai");
+
+          if (aiIndex !== -1) {
+            updated[aiIndex].message = currentMessage;
+          } else {
+            updated.push({ sender: "ai", message: currentMessage });
+          }
+
+          return updated;
+        });
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+    } catch {
       setConversation((prev) => [...prev, { sender: "ai", message: "Error generating content." }]);
     } finally {
       setLoading(false);
@@ -126,20 +126,17 @@ const Main = () => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [conversation]);
-   
-   
-   const toggleNav = () => {
-    setShowSettings((prev) => !prev);
-  };
 
-  const closeNav = () => {
-    setShowSettings(false);
-  };
+  const toggleNav = () => setShowSettings((prev) => !prev);
+  const closeNav = () => setShowSettings(false);
+
   
   return (
     <section className="min-h-screen font-sans bg-zinc-800">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation || []} />
-      <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
+     
+     <main className="md:pt-0 md:ml-64 bg-zinc-800 relative">
+      <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session.length > 0 ? (
           <>
             <FaBars className="md:hidden z-[1000] block text-white" onClick={toggleNav} />
@@ -164,9 +161,9 @@ const Main = () => {
         )}
       </header>
 
-      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 md:ml-40 overflow-x-hidden pb-16 font-san px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
+      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
         <div ref={chatContainerRef} className="mb-48">
-          <section className={`${conversation.length === 0 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto md:ml-44 translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
+          <section className={`${conversation.length < 1 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
             {[
               { content: "Teach me Typescript and React"},
@@ -233,7 +230,7 @@ const Main = () => {
         </div>
       </div>
 
-      <footer className="text-sm select-none bg-zinc-800 p-5 fixed bottom-0 w-full md:w-10/12 md:left-48 md:right-80">
+      <footer className="text-sm absolute bottom-0 select-none bg-zinc-800 p-5 mx-auto w-full md:w-11/12">
         <form onSubmit={handleGenerate} className="relative">
           <div className="relative">
             <textarea
@@ -251,6 +248,7 @@ const Main = () => {
         </form>
         <div className="mt-2 text-gray-400 text-sm line-clamp-1 md:line-clamp-none text-white text-center">ChatGPT can make mistakes. Check for important info</div>
       </footer>
+      </main>
     </section>
   );
 };

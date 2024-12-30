@@ -1,11 +1,11 @@
 import { FileText, Sliders, HelpCircle, Settings, DoorOpen } from "lucide-react";
 
-const NavBarModal = ({ session }) => {
+const NavBarModal = () => {
   return (
     <div className="select-none w-full p-3 mb-4 bg-zinc-700 rounded shadow-2xl">
       {/* Email Section */}
       <div className="line-clamp-1 mb-4 text-white border-b border-zinc-500 pb-2">
-        {session}
+      
       </div>
 
       {/* Options List */}
@@ -32,7 +32,14 @@ const NavBarModal = ({ session }) => {
 
       {/* Logout Section */}
       <div className="mt-4 border-t border-zinc-500 pt-2">
-        <div className="flex items-center p-2 rounded hover:bg-zinc-600">
+        <div
+        onClick={() => {
+        localStorage.removeItem('isAuthenticated')
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+        window.location.href = "/"
+        }}
+        className="flex items-center p-2 rounded hover:bg-zinc-600">
           <DoorOpen className="inline mr-3 text-red-500" />
           <span className="text-red-500">Logout</span>
         </div>

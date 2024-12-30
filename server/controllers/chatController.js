@@ -1,7 +1,7 @@
 import {User, Conversation }from '../models/User.js';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-
+import {Readable} from 'stream'
 dotenv.config();
 
 const API_KEY = process.env.GOOGLE_API_KEY;
@@ -11,9 +11,7 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 // **Save Conversation**
 export const saveConversation = async (req, res) => {
   const { email, conversation } = req.body;
-console.log("Request body:", req.body);
-console.log("Finding user by email:", email);
-console.log("Saving conversation:", conversation);
+  console.log("Request body:", req.body);
 
   if (!email || !conversation || !Array.isArray(conversation.messages)) {
     return res.status(400).json({ message: "Invalid input data" });
@@ -43,9 +41,6 @@ console.log("Saving conversation:", conversation);
     }
     
     console.log("Request body:", req.body);
-console.log("Finding user by email:", email);
-console.log("Saving conversation:", conversation);
-
     res.status(200).json({ message: "Conversation saved successfully" });
   } catch (error) {
     console.error("Error saving conversation:", error);
@@ -89,7 +84,7 @@ export const generate = async (req, res) => {
   try {
     const result = await model.generateContent(userPrompt);
     res.status(200).json({ response: result.response.text().trim() });
-  } catch (error) {
+    } catch (error) {
     console.error('Error generating content:', error);
     res.status(500).json({ message: 'Failed to generate content' });
   }
