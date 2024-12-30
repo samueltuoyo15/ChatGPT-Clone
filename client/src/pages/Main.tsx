@@ -23,13 +23,13 @@ const Main = () => {
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        setSession(...parsedUser);
+        setSession({...parsedUser});
         console.log(session)
       } catch {
-        setSession([]);
+        setSession({});
       }
     } else {
-      setSession([]);
+      setSession({});
     }
   }, []);
 
