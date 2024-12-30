@@ -13,7 +13,7 @@ const Main = () => {
   const [conversation, setConversation] = useState<any[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
-  const [session, setSession] = useState<any[]>([]);
+  const [session, setSession] = useState<{id?: string; email?: string;}>({});
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [currentConversation, setCurrentConversation] = useState<{ conversationId: number; messages: any } | null>(null);
   
@@ -23,7 +23,7 @@ const Main = () => {
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        setSession(Array.isArray(parsedUser) ? {...parsedUser[0]} : {...parsedUser});
+        setSession(...parsedUser);
         console.log(session)
       } catch {
         setSession([]);
@@ -140,7 +140,7 @@ getConv()
      
      <main className="md:pt-0 md:ml-64 bg-zinc-800 relative">
       <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
-        {session.length > 0 ? (
+        {session?.email ?  (
           <>
             <FaBars className="md:hidden z-[1000] block text-white" onClick={toggleNav} />
             <div className="flex items-center bg-zinc-500 rounded py-1 px-3">

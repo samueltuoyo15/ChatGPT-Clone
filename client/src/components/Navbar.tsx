@@ -72,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         {/* User Section */}
         {toggleSettings && ( <NavBarModal session={session?.email || null}/>)}
         
-        {session && session.length > 0? (
+        {session?.email? (
           <div 
           onClick={() => setToggleSettings(!toggleSettings)}
           className="flex items-center px-4 py-3 bg-zinc-900 border-t border-zinc-700">
