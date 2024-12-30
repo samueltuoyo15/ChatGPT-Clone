@@ -60,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         }`}
       >
         <p className="truncate">
-          {conv[0]?.groupName || ""}
+          {conv?.groupName || ""}
         </p>
       </div>
     ))
@@ -70,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 </div>
 
         {/* User Section */}
-        {toggleSettings && ( <NavBarModal session={session[0]?.email || null}/>)}
+        {toggleSettings && ( <NavBarModal session={session?.email || null}/>)}
         
         {session && session.length > 0? (
           <div 
@@ -81,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
               alt="User Avatar"
               className="w-8 h-8 rounded-full mr-3"
             />
-            <p className="line-clamp-1 text-sm font-medium truncate">{session[0]?.email.split("@")[0]}</p>
+            <p className="line-clamp-1 text-sm font-medium truncate">{session?.email.split("@")}</p>
           </div>
         ) : (
           <p className="px-4 py-3 text-sm text-zinc-400">No user data</p>

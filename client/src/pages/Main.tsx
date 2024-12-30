@@ -16,13 +16,15 @@ const Main = () => {
   const [session, setSession] = useState<any[]>([]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [currentConversation, setCurrentConversation] = useState<{ conversationId: number; messages: any } | null>(null);
-
+  
+   console.log('jsjsn', session)
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        setSession(Array.isArray(parsedUser) ? parsedUser : [parsedUser]);
+        setSession(Array.isArray(parsedUser) ? {...parsedUser[0]} : {...parsedUser});
+        console.log(session)
       } catch {
         setSession([]);
       }
@@ -33,13 +35,13 @@ const Main = () => {
 
   useEffect(() => {
     const saveConversation = async () => {
-      if (!session[0]?.email) return;
+      if (!session.email) return;
       try {
         const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: session[0]?.email,
+            email: session?.email,
             conversation: { messages: conversation },
           }),
         });
@@ -54,14 +56,14 @@ const Main = () => {
   
   useEffect(() => {
   const getConv = async () => {
-  if (!session || !session[0]?.email) {
+  if (!session || !session?.email) {
     console.error("Session or email is undefined");
     return;
   }
 
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_GETCONV_URL}?email=${session[0]?.email}`
+      `${import.meta.env.VITE_GETCONV_URL}?email=${session?.email}`
     );
     const data = await res.json();
     console.log("Fetched conversations:", data);
