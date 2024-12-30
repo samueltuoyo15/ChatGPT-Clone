@@ -1,6 +1,9 @@
 import { FileText, Sliders, HelpCircle, Settings, DoorOpen } from "lucide-react";
+interface NavBarModalProps {
+  session: string | null; 
+}
 
-const NavBarModal = () => {
+const NavBarModal: React.FC<NavBarModalProps> = ({session}) => {
   return (
     <div className="select-none w-full p-3 mb-4 bg-zinc-700 rounded shadow-2xl">
       {/* Email Section */}

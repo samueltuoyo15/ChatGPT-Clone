@@ -8,8 +8,8 @@ interface Conversation {
 }
 
 interface User {
-  id: string;
-  email: string;
+  id?: string;
+  email?: string;
 }
 
 interface NavbarProps {
@@ -72,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         {/* User Section */}
         {toggleSettings && ( <NavBarModal session={session?.email || null}/>)}
         
-        {session?.email? (
+        {session?.email ? (
           <div 
           onClick={() => setToggleSettings(!toggleSettings)}
           className="flex items-center px-4 py-3 bg-zinc-900 border-t border-zinc-700">

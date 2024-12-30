@@ -39,7 +39,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
   
   const handleSocialAuth = async (provider: string) => {
     try{
-      await loginWithRedirect({connection: provider,})
+      await loginWithRedirect({connection: provider,} as any)
       console.log('Success')
     }catch(error){
       console.log(provider +' social login error ' + error)
