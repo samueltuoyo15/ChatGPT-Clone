@@ -73,6 +73,7 @@ const Main = () => {
     console.error("Error fetching conversations:", error);
   }
 };
+getConv()
 }, [session])
   const startNewConversation = () => {
     setCurrentConversation({ conversationId: Date.now(), messages: [] });
