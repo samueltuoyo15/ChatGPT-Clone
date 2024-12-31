@@ -11,8 +11,8 @@ const conversationSchema = new mongoose.Schema({
   groupName: { type: String, default: "Untitled Conversation" },
   messages: [messageSchema],
   createdAt: { type: Date, default: Date.now },
-});
-
+  updatedAt: { type: Date, default: Date.now },
+}, { timestamps: true });
 
 const userSchema = new mongoose.Schema({
   email: { 
@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true }, 
   conversations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' }],
 });
-
 
 const User = mongoose.model('User', userSchema);
 const Conversation = mongoose.model('Conversation', conversationSchema);
