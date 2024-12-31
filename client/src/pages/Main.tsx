@@ -170,8 +170,8 @@ getConv()
         )}
       </header>
 
-      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full mb-15 ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
-        <div ref={chatContainerRef} className="mb-48">
+      <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
+        <div ref={chatContainerRef} className="">
           <section className={`${conversation.length < 1 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
             <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
             {[
@@ -186,7 +186,7 @@ getConv()
                     setInput(prompt.content);
                     handleGenerate({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>);
                   }}
-                  className={`flex items-center h-16 p-3 border-2 border-zinc-700 shadow-4xl text-white md:mb-0 mb-3 rounded-2xl`}
+                  className={`flex items-center h-16 p-3 border-2 border-zinc-700 shadow-3xl text-white md:mb-0 mb-3 rounded-2xl`}
                 >
                   {prompt.content}
                 </div>
