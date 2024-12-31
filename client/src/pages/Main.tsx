@@ -81,48 +81,51 @@ getConv()
   };
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  e.preventDefault();
+  if (!input.trim()) return;
 
-    setConversation((prev) => [...prev, { sender: "user", message: input }]);
-    setLoading(true);
+  setConversation((prev) => [...prev, { sender: "user", message: input }]);
+  setLoading(true);
 
-    try {
-      const res = await fetch(import.meta.env.VITE_BASE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input }),
+  try {
+    const res = await fetch(import.meta.env.VITE_BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: input }),
+    });
+
+    const data = await res.json();
+    const fullMessage = data.response;
+    let currentMessage = "";
+
+    setConversation((prev) => [...prev, { sender: "ai", message: "" }]);
+
+    for (let i = 0; i < fullMessage.length; i++) {
+      currentMessage += fullMessage[i];
+
+      setConversation((prev) => {
+        const updated = [...prev];
+        const lastIndex = updated.length - 1;
+        if (updated[lastIndex]?.sender === "ai") {
+          updated[lastIndex].message = currentMessage;
+        }
+        return updated;
       });
 
-      const data = await res.json();
-      const fullMessage = data.response;
-      let currentMessage = "";
-
-      for (let i = 0; i < fullMessage.length; i++) {
-        currentMessage += fullMessage[i];
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        setConversation((prev) => {
-          const updated = [...prev];
-          const aiIndex = updated.findIndex((msg) => msg.sender === "ai");
-
-          if (aiIndex !== -1) {
-            updated[aiIndex].message = currentMessage;
-          } else {
-            updated.push({ sender: "ai", message: currentMessage });
-          }
-
-          return updated;
-        });
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      }
-    } catch {
-      setConversation((prev) => [...prev, { sender: "ai", message: "Error generating content." }]);
-    } finally {
-      setLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     }
+  } catch {
+    setConversation((prev) => [
+      ...prev,
+      { sender: "ai", message: "Error generating content." },
+    ]);
+  } finally {
+    setLoading(false);
+  }
 
-    setInput("");
-  };
+  setInput("");
+};
 
   useEffect(() => {
     if (chatContainerRef.current) {
