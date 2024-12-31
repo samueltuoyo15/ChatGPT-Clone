@@ -145,7 +145,7 @@ getConv()
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation || []} />
      
      <main className="md:pt-0 md:ml-64 min-h-100 bg-zinc-800 relative">
-      <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center ">
+      <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center">
         {session?.email ?  (
           <>
             <FaBars className="md:hidden z-[1000] block text-white" onClick={toggleNav} />
@@ -198,7 +198,7 @@ getConv()
             const isAIMessage = chat.sender === "ai";
 
             return (
-              <div key={index} className={isUserMessage ? "bg-zinc-700 text-white rounded-2xl w-fit max-w-[70%] px-4 py-3 text-white mt-7 ml-auto" : "bg-transparent text-white w-full p-2 mt-5"}>
+              <div key={index} className={isUserMessage ? "bg-zinc-700 text-white rounded-lg w-fit max-w-[70%] px-4 py-3 text-white mt-7 ml-auto" : "bg-transparent text-white w-full p-2 mt-5"}>
                 {isAIMessage ? (
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
@@ -239,7 +239,7 @@ getConv()
         </div>
       </div>
 
-      <footer className="text-sm absolute bottom-0 select-none bg-zinc-800 p-5 mx-auto w-full md:w-11/12">
+      <footer className="text-sm fixed overflow-hidden md:left-60 md:right-40 bottom-0 select-none bg-zinc-800 p-5 mx-auto w-full md:w-9/12">
         <form onSubmit={handleGenerate} className="relative">
           <div className="relative">
             <textarea
