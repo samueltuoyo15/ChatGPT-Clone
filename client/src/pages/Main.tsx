@@ -194,7 +194,7 @@ const Main = () => {
 
         <div
           id="container"
-          className={`text-sm select-none bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full ${showSettings ? "md:ml-52" : "md:ml-0"}`}
+          className={`text-sm select-none mb-44 bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full ${showSettings ? "md:ml-52" : "md:ml-0"}`}
         >
           <div ref={chatContainerRef} className="">
             <section className={`${conversation.length < 1 ? "" : "hidden"} select-none md:overflow-x-hidden md:max-w-full md:transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
