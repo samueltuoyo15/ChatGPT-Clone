@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from "react-icons/fa";
@@ -99,7 +100,7 @@ getConv()
     let currentMessage = "";
 
     setConversation((prev) => [...prev, { sender: "ai", message: "" }]);
-
+    setLoading(false)
     for (let i = 0; i < fullMessage.length; i++) {
       currentMessage += fullMessage[i];
 
@@ -113,8 +114,9 @@ getConv()
       });
 
       await new Promise((resolve) => setTimeout(resolve, 50));
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     }
+
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   } catch {
     setConversation((prev) => [
       ...prev,
@@ -126,6 +128,7 @@ getConv()
 
   setInput("");
 };
+
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -141,8 +144,8 @@ getConv()
     <section className="min-h-screen font-sans bg-zinc-800">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation || []} />
      
-     <main className="md:pt-0 md:ml-64 bg-zinc-800 relative">
-      <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
+     <main className="md:pt-0 md:ml-64 min-h-100 bg-zinc-800 relative">
+      <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center ">
         {session?.email ?  (
           <>
             <FaBars className="md:hidden z-[1000] block text-white" onClick={toggleNav} />
