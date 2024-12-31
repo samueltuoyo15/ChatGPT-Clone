@@ -16,6 +16,7 @@ const App = () => {
      <Router>
       <Routes>
      <Route path="/" element={<Main />}/>
+     <Route path="/conversation/:id" element={<Main />} />
      <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
      <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated}/>} />
       <Route path="*" element={<NotFoundPage />} />

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams} from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
@@ -10,12 +10,29 @@ import Navbar from "../components/Navbar";
 const Main = () => {
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [conversation, setConversation] = useState<any[]>([]);
+  const [conversation, setConversation] = useState<any[] | null>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<{id?: string; email?: string;}>({});
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [currentConversation, setCurrentConversation] = useState<{ conversationId: number; messages: any } | null>(null);
+ 
+  const {id} = useParams();
+  
+  useEffect(() => {
+    const fetchConById = async () => {
+      try{
+        const response = await fetch(`${import.meta.env.VITE_FETCH_BY_ID}${id}`)
+        const data = await response.json()
+        if(!response.ok) return console.error(data.message)
+        setConversation(data)
+      }catch(error){
+        console.error(error)
+      }
+    }
+    if (id) {
+    fetchConById();
+  }
+  }, [id])
   
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -48,15 +65,14 @@ const Main = () => {
         console.error("Error saving conversation:", error);
       }
     };
-
-    saveConversation();
-  }, [currentConversation]);
+    
+   if(conversation) saveConversation();
+  }, [conversation]);
   
   useEffect(() => {
   const getConv = async () => {
   if (!session || !session?.email) {
-    console.error("Session or email is undefined");
-    return;
+        return;
   }
 
   try {
@@ -74,7 +90,7 @@ const Main = () => {
 getConv()
 }, [session])
   const startNewConversation = () => {
-    setCurrentConversation({ conversationId: Date.now(), messages: [] });
+    setConversation({ conversationId: Date.now(), messages: [] });
     setConversation([]);
   };
 

@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom"; 
 import NavBarModal from './NavBarModal';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 interface Conversation {
   _id: string; 
@@ -27,6 +29,12 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
     setCurrentConvId(id);
     closeNav();
   };
+  
+  const formatTimestamp = (timestamp: string) => {
+    const date = parseISO(timestamp);
+    const distance = formatDistanceToNow(date);
+    return distance === 'less than a minute' ? 'Just now' : `${distance} ago`;
+  };
 
   return (
     <nav
@@ -50,15 +58,22 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         <div className="flex-grow overflow-y-auto">
           {conversations.length > 0 ? (
             conversations.map((conv) => (
-              <div
+              <Link 
                 key={conv._id}
+                to={`/conversation/${conv._id}`}
                 onClick={() => handleConversationSelect(conv._id)}
                 className={`px-4 py-3 cursor-pointer hover:bg-zinc-700 ${
                   currentConvId === conv._id ? "bg-zinc-700" : ""
                 }`}
               >
-                <p className="truncate">{conv?.groupName || "Untitled Conversation"}</p>
-              </div>
+                <div className="flex justify-between items-center">
+                  <p className="truncate">{conv?.groupName || "Untitled Conversation"}</p>
+                  <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p className="text-sm text-zinc-400">{formatTimestamp(conv.messages[conv.messages.length - 1]?.sender || '')}</p>
+                    <button className="text-zinc-400">...</button>
+                  </div>
+                </div>
+              </Link>
             ))
           ) : (
             <p className="px-4 py-3 text-sm text-zinc-400">No conversations yet</p>
