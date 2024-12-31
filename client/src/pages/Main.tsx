@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from "react-icons/fa";
@@ -18,14 +17,12 @@ const Main = () => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [currentConversation, setCurrentConversation] = useState<{ conversationId: number; messages: any } | null>(null);
   
-   console.log('jsjsn', session)
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
         setSession({...parsedUser});
-        console.log(session)
       } catch {
         setSession({});
       }
@@ -141,10 +138,10 @@ getConv()
 
   
   return (
-    <section className="min-h-screen font-sans bg-zinc-800">
+    <section className="min-h-screen overflow-hidden font-sans bg-zinc-800">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversation || []} />
      
-     <main className="md:pt-0 md:ml-64 min-h-100 bg-zinc-800 relative">
+     <main className="md:pt-0 md:ml-64 min-h-screen bg-zinc-800 relative">
       <header className="text-lg select-none font-sans bg-zinc-800 top-0 w-full text-white p-5 flex justify-between items-center">
         {session?.email ?  (
           <>
@@ -172,8 +169,10 @@ getConv()
 
       <div id="container" className={`text-sm select-none bg-zinc-800 pt-16 overflow-x-hidden pb-16 font-san px-5 max-w-full ${showSettings ? "md:ml-52" : "md:ml-0"}`}>
         <div ref={chatContainerRef} className="">
-          <section className={`${conversation.length < 1 ? "" : "hidden"} md:overflow-x-hidden md:max-w-full md:transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
-            <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
+          <section className={`${conversation.length < 1 ? "" : "hidden"} select-none md:overflow-x-hidden md:max-w-full md:transform mx-auto translate-y-28 text-white grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-5 items-center`}>
+            <img 
+            onContextMenu={(e) => e.preventDefault()}
+            src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-20 mx-auto md:col-span-full mb-4" />
             {[
               { content: "Teach me Typescript and React"},
               { content: "Summarize a Long Document or Poem"},
@@ -201,7 +200,9 @@ getConv()
               <div key={index} className={isUserMessage ? "bg-zinc-700 text-white rounded-lg w-fit max-w-[70%] px-4 py-3 text-white mt-7 ml-auto" : "bg-transparent text-white w-full p-2 mt-5"}>
                 {isAIMessage ? (
                   <>
-                    <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
+                    <img
+                    onContextMenu={(e) => e.preventDefault()}
+                    src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
                       <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">{chat.message}</ReactMarkdown>
                       <div className="ml-10">
