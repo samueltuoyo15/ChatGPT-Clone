@@ -6,7 +6,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 interface Conversation {
   _id: string; 
   groupName: string; 
-  messages: { sender: string; content: string }[];
+  messages: { sender: string; content: string; timestamp: string}[];
 }
 
 interface User {
@@ -56,8 +56,8 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         </div>
 
         <div className="flex-grow overflow-y-auto">
-          {conversations.length > 0 ? (
-            conversations.map((conv) => (
+          {conversations[0]?.length > 0 ? (
+            conversations[0]?.map((conv) => (
               <Link 
                 key={conv._id}
                 to={`/conversation/${conv._id}`}
