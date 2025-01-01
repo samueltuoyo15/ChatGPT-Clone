@@ -63,11 +63,11 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
           {conversations && conversations.length > 0 ? (
             conversations.map((conv) => (
               <Link 
-                key={conv._id}
-                to={`/conversation/${conv._id}`}
-                onClick={() => handleConversationSelect(conv._id)}
+                key={conv.id}
+                to={`/conversation/${conv.id}`}
+                onClick={() => handleConversationSelect(conv.id)}
                 className={`px-4 py-3 cursor-pointer hover:bg-zinc-700 ${
-                  currentConvId === conv._id ? "bg-zinc-700" : ""
+                  currentConvId === conv.id ? "bg-zinc-700" : ""
                 }`}
               >
                 <div className="flex justify-between items-center">

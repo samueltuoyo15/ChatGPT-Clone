@@ -98,8 +98,6 @@ useEffect(() => {
       saveConversation();
     }
   }, [conversation, session?.email]);
-};
-
 
   useEffect(() => {
     const getConv = async () => {
