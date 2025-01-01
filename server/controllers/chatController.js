@@ -77,18 +77,29 @@ export const getConversations = async (req, res) => {
   }
 };
 
-export const getConversationById = async () => {
-      const { id } = req.params;
-    try {
-        const conversation = await Conversation.findById(id);
-        if (!conversation) {
-            return res.status(404).json({ message: 'Conversation not found' });
-        }
-        res.json(conversation);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+export const getConversationById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const conversation = await Conversation.findById(id);
+    if (!conversation) {
+      return res.status(404).json({ message: 'Conversation not found' });
     }
-}
+    const formattedConversation = {
+      _id: conversation._id,
+      groupName: conversation.groupName,
+      messages: conversation.messages.map(msg => ({
+        sender: msg.sender,
+        message: msg.content,
+        timestamp: msg.timestamp
+      }))
+    };
+    res.json(formattedConversation);
+  } catch (error) {
+    console.error('Error fetching conversation:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 export const generate = async (req, res) => {
   const { prompt } = req.body;

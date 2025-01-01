@@ -3,13 +3,19 @@ import { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import ReactMarkdown from "react-markdown";
-import loadingGif from "/loading.gif";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 
 interface ConversationMessage {
   sender: "user" | "ai";
   message: string;
+  timestamp: string;
+}
+
+interface Conversation {
+  _id: string;
+  groupName: string;
+  messages: ConversationMessage[];
 }
 
 interface Session {
@@ -21,6 +27,7 @@ const Main = () => {
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<Session>({});
@@ -34,7 +41,7 @@ const Main = () => {
         const response = await fetch(`${import.meta.env.VITE_FETCH_BY_ID}${id}`);
         const data = await response.json();
         if (!response.ok) return console.error(data.message);
-        setConversation(data);
+        setConversation(data.messages);
       } catch (error) {
         console.error(error);
       }
@@ -57,41 +64,35 @@ const Main = () => {
       setSession({});
     }
   }, []);
-useEffect(() => {
-  const saveConversation = async () => {
-    if (!session.email) return;
 
-    try {
-      const formattedMessages = conversation.map((msg) => ({
-        sender: msg.sender, // "user" or "ai"
-        content: msg.message, // Message content
-      }));
+  useEffect(() => {
+    const saveConversation = async () => {
+      if (!session.email) return;
 
-      const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: session?.email,
-          conversation: {
-            groupName: "Default Group Name", // Replace with user input if needed
-            messages: formattedMessages,
-          },
-        }),
-      });
+      try {
+        const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: session?.email,
+            conversation: {
+              groupName: "Default Group Name",
+              messages: conversation,
+            },
+          }),
+        });
 
-      const data = await res.json();
-      console.log("Conversation saved:", data);
-    } catch (error) {
-      console.error("Error saving conversation:", error);
+        const data = await res.json();
+        console.log("Conversation saved:", data);
+      } catch (error) {
+        console.error("Error saving conversation:", error);
+      }
+    };
+
+    if (conversation.length > 0) {
+      saveConversation();
     }
-  };
-
-  if (conversation.length > 0) {
-    saveConversation();
-  }
-}, [conversation, session?.email]);
-
-  
+  }, [conversation, session?.email]);
 
   useEffect(() => {
     const getConv = async () => {
@@ -105,8 +106,7 @@ useEffect(() => {
         );
         const data = await res.json();
         console.log("Fetched conversations:", data);
-        const allConversations = Object.values(data).flat();
-        setConversation(allConversations);
+        setConversations(data);
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       } catch (error) {
         console.error("Error fetching conversations:", error);
@@ -115,12 +115,11 @@ useEffect(() => {
     getConv();
   }, [session]);
 
- 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    setConversation((prev) => [...prev, { sender: "user", message: input }]);
+    setConversation((prev) => [...prev, { sender: "user", message: input, timestamp: new Date().toISOString() }]);
     setLoading(true);
 
     try {
@@ -134,7 +133,7 @@ useEffect(() => {
       const fullMessage = data.response;
       let currentMessage = "";
 
-      setConversation((prev) => [...prev, { sender: "ai", message: "" }]);
+      setConversation((prev) => [...prev, { sender: "ai", message: "", timestamp: new Date().toISOString() }]);
       setLoading(false);
       for (let i = 0; i < fullMessage.length; i++) {
         currentMessage += fullMessage[i];
@@ -155,7 +154,7 @@ useEffect(() => {
     } catch {
       setConversation((prev) => [
         ...prev,
-        { sender: "ai", message: "Error generating content." },
+        { sender: "ai", message: "Error generating content.", timestamp: new Date().toISOString() },
       ]);
     } finally {
       setLoading(false);
@@ -163,7 +162,7 @@ useEffect(() => {
 
     setInput("");
   };
-  // Start a new conversation by making a request to the backend
+
   const startNewConversation = async () => {
     try {
       const response = await fetch(import.meta.env.VITE_CREATE_CONV_URL, {
@@ -178,12 +177,13 @@ useEffect(() => {
       }
 
       const newConversation = await response.json();
-      setConversation(newConversation.messages || []);
+      setConversation([]);
+      setConversations((prev) => [...prev, newConversation]);
     } catch (error) {
       console.error("Error creating new conversation:", error);
     }
   };
-  
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;

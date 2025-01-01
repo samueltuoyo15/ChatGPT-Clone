@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom"; 
 import NavBarModal from './NavBarModal';
-import { formatDistanceToNow, parseISO } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Conversation {
   _id: string; 
   groupName: string; 
-  messages: { sender: string; content: string; timestamp: string}[];
+  messages: { sender: string; message: string; timestamp: string }[];
 }
 
 interface User {
@@ -29,17 +29,16 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
     setCurrentConvId(id);
     closeNav();
   };
-  const formatTimestamp = (timestamp) => {
-  if (!timestamp) return "Invalid date";
-  try {
-    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
-  } catch (error) {
-    console.error("Error formatting timestamp:", error);
-    return "Invalid date";
-  }
-};
 
-  
+  const formatTimestamp = (timestamp: string) => {
+    if (!timestamp) return "Invalid date";
+    try {
+      return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+    } catch (error) {
+      console.error("Error formatting timestamp:", error);
+      return "Invalid date";
+    }
+  };
 
   return (
     <nav
@@ -72,9 +71,11 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
                 }`}
               >
                 <div className="flex justify-between items-center">
-                  <p className="truncate">{conv?.groupName || "Untitled Conversation"}</p>
+                  <p className="truncate">{conv.groupName || "Untitled Conversation"}</p>
                   <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p className="text-sm text-zinc-400">{formatTimestamp(conv.messages[conv.messages.length - 1]?.sender || '')}</p>
+                    <p className="text-sm text-zinc-400">
+                      {formatTimestamp(conv.messages[conv.messages.length - 1]?.timestamp || '')}
+                    </p>
                     <button className="text-zinc-400">...</button>
                   </div>
                 </div>
@@ -108,3 +109,4 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 };
 
 export default Navbar;
+
