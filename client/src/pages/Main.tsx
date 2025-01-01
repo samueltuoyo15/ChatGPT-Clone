@@ -57,29 +57,41 @@ const Main = () => {
       setSession({});
     }
   }, []);
+useEffect(() => {
+  const saveConversation = async () => {
+    if (!session.email) return;
 
-  useEffect(() => {
-    const saveConversation = async () => {
-      if (!session.email) return;
-      try {
-        const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: session?.email,
-            conversation: { messages: conversation },
-          }),
-        });
-        await res.json();
-      } catch (error) {
-        console.error("Error saving conversation:", error);
-      }
-    };
+    try {
+      const formattedMessages = conversation.map((msg) => ({
+        sender: msg.sender, // "user" or "ai"
+        content: msg.message, // Message content
+      }));
 
-    if (conversation.length > 0) {
-      saveConversation();
+      const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session?.email,
+          conversation: {
+            groupName: "Default Group Name", // Replace with user input if needed
+            messages: formattedMessages,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      console.log("Conversation saved:", data);
+    } catch (error) {
+      console.error("Error saving conversation:", error);
     }
-  }, [conversation, session?.email]);
+  };
+
+  if (conversation.length > 0) {
+    saveConversation();
+  }
+}, [conversation, session?.email]);
+
+  
 
   useEffect(() => {
     const getConv = async () => {
