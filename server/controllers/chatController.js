@@ -8,6 +8,29 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
+const createConversation = async (req, res) => {
+  try {
+    const { groupName, messages } = req.body;
+
+    // Validate input
+    if (!groupName) {
+      return res.status(400).json({ error: 'Group name is required.' });
+    }
+
+    // Create a new conversation
+    const newConversation = new Conversation({
+      groupName,
+      messages: messages || [], 
+    });
+
+    const savedConversation = await newConversation.save();
+    res.status(201).json(savedConversation);
+  } catch (error) {
+    console.error('Error creating conversation:', error);
+    res.status(500).json({ error: 'Failed to create conversation.' });
+  }
+};
+
 export const saveConversation = async (req, res) => {
   const { email, conversation } = req.body;
 
