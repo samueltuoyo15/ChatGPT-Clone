@@ -64,20 +64,25 @@ const Main = () => {
       setSession({});
     }
   }, []);
-
-  useEffect(() => {
+useEffect(() => {
     const saveConversation = async () => {
       if (!session.email) return;
 
       try {
+        const formattedMessages = conversation.map(msg => ({
+          sender: msg.sender,
+          content: msg.message,
+          timestamp: msg.timestamp
+        }));
+
         const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: session?.email,
             conversation: {
-              groupName: "Default Group Name",
-              messages: conversation,
+              groupName: "Default Group Name", 
+              messages: formattedMessages,
             },
           }),
         });
@@ -93,6 +98,8 @@ const Main = () => {
       saveConversation();
     }
   }, [conversation, session?.email]);
+};
+
 
   useEffect(() => {
     const getConv = async () => {

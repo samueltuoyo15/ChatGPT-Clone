@@ -60,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         </div>
 
         <div className="flex-grow overflow-y-auto">
-          {conversations.length > 0 ? (
+          {conversations && conversations.length > 0 ? (
             conversations.map((conv) => (
               <Link 
                 key={conv._id}
@@ -74,7 +74,9 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
                   <p className="truncate">{conv.groupName || "Untitled Conversation"}</p>
                   <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <p className="text-sm text-zinc-400">
-                      {formatTimestamp(conv.messages[conv.messages.length - 1]?.timestamp || '')}
+                      {conv.messages && conv.messages.length > 0
+                        ? formatTimestamp(conv.messages[conv.messages.length - 1]?.timestamp || '')
+                        : 'No messages'}
                     </p>
                     <button className="text-zinc-400">...</button>
                   </div>

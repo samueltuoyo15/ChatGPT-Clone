@@ -44,21 +44,27 @@ export const saveConversation = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const newConversation = new Conversation({
-      userId: user.id,
+      userId: user._id,
       groupName: conversation.groupName || "Untitled Conversation",
-      messages: conversation.messages,
+      messages: conversation.messages.map(msg => ({
+        sender: msg.sender,
+        content: msg.message || msg.content, // Handle both 'message' and 'content' properties
+        timestamp: msg.timestamp || new Date()
+      })),
     });
 
     await newConversation.save();
     user.conversations.push(newConversation._id);
     await user.save();
 
-    res.status(200).json({ message: "Conversation saved successfully" });
+    res.status(200).json({ message: "Conversation saved successfully", conversationId: newConversation._id });
   } catch (error) {
     console.error("Error saving conversation:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
+
 
 
 export const getConversations = async (req, res) => {
