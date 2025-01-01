@@ -56,8 +56,8 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
         </div>
 
         <div className="flex-grow overflow-y-auto">
-          {conversations[0]?.length > 0 ? (
-            conversations[0]?.map((conv) => (
+          {conversations.length > 0 ? (
+            conversations.map((conv) => (
               <Link 
                 key={conv._id}
                 to={`/conversation/${conv._id}`}

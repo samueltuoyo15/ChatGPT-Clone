@@ -93,7 +93,8 @@ const Main = () => {
         );
         const data = await res.json();
         console.log("Fetched conversations:", data);
-        setConversation(data);
+        const allConversations = Object.values(data).flat();
+        setConversation(allConversations);
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       } catch (error) {
         console.error("Error fetching conversations:", error);
