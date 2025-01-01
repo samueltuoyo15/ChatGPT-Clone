@@ -29,12 +29,17 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
     setCurrentConvId(id);
     closeNav();
   };
+  const formatTimestamp = (timestamp) => {
+  if (!timestamp) return "Invalid date";
+  try {
+    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+  } catch (error) {
+    console.error("Error formatting timestamp:", error);
+    return "Invalid date";
+  }
+};
+
   
-  const formatTimestamp = (timestamp: string) => {
-    const date = parseISO(timestamp);
-    const distance = formatDistanceToNow(date);
-    return distance === 'less than a minute' ? 'Just now' : `${distance} ago`;
-  };
 
   return (
     <nav

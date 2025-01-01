@@ -79,7 +79,7 @@ const Main = () => {
     if (conversation.length > 0) {
       saveConversation();
     }
-  }, [conversation, session.email]);
+  }, [conversation, session?.email]);
 
   useEffect(() => {
     const getConv = async () => {
@@ -103,10 +103,7 @@ const Main = () => {
     getConv();
   }, [session]);
 
-  const startNewConversation = () => {
-    setConversation([]);
-  };
-
+ 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -154,7 +151,27 @@ const Main = () => {
 
     setInput("");
   };
+  // Start a new conversation by making a request to the backend
+  const startNewConversation = async () => {
+    try {
+      const response = await fetch(import.meta.env.VITE_CREATE_CONV_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session?.id, groupName: "New Conversation", messages: [] }),
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create conversation.");
+      }
+
+      const newConversation = await response.json();
+      setConversation(newConversation.messages || []);
+    } catch (error) {
+      console.error("Error creating new conversation:", error);
+    }
+  };
+  
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -181,7 +198,7 @@ const Main = () => {
             </>
           ) : (
             <>
-              <FaRegEdit className="text-white" />
+              <FaRegEdit className="text-white" onClick={startNewConversation} />
               <div className="flex items-center">
                 <h1 className="text-center text-white font-extrabold">ChatGPT</h1>
                 <IoIosArrowDown className="ml-2" />

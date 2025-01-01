@@ -8,9 +8,9 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-const createConversation = async (req, res) => {
+export const createConversation = async (req, res) => {
   try {
-    const { groupName, messages } = req.body;
+    const { userId, groupName, messages } = req.body;
 
     // Validate input
     if (!groupName) {
@@ -19,6 +19,7 @@ const createConversation = async (req, res) => {
 
     // Create a new conversation
     const newConversation = new Conversation({
+      userId,
       groupName,
       messages: messages || [], 
     });
@@ -43,7 +44,7 @@ export const saveConversation = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const newConversation = new Conversation({
-      userId: user._id,
+      userId: user.id,
       groupName: conversation.groupName || "Untitled Conversation",
       messages: conversation.messages,
     });
