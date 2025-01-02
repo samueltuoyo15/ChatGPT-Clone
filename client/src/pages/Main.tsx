@@ -168,6 +168,11 @@ useEffect(() => {
     setInput("");
   };
 
+ const handleQuickGenerate = (content: string) => {
+  setInput(content);
+  handleGenerate({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>);
+};
+
   const startNewConversation = async () => {
     try {
       const response = await fetch(import.meta.env.VITE_CREATE_CONV_URL, {
@@ -237,10 +242,7 @@ useEffect(() => {
             ].map((prompt, index) => (
               <div key={index}>
                 <div
-                  onClick={() => {
-                    setInput(prompt.content);
-                    handleGenerate({ preventDefault: () => {} });
-                  }}
+                  onClick={() => handleQuickGenerate(prompt.content)}
                   className={`flex items-center h-16 p-3 border-2 border-zinc-700 shadow-4xl text-white md:mb-0 mb-3 rounded-2xl`}
                 >
                   {prompt.content}
