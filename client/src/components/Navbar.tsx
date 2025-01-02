@@ -42,10 +42,9 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 
   return (
     <nav
-      onClick={(e) => { if (e.target === e.currentTarget) closeNav(); }}
-      className={`fixed top-0 left-0 w-64 h-full bg-zinc-800 z-10 shadow-lg transition-transform ${
+      className={`h-full fixed w-60 top-0 left-0 bg-zinc-700 z-10 transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } md:translate-x-0 md:w-60`}
+      } md:translate-x-0 md:w-44`}
     >
       <div className="flex flex-col h-full text-white">
         <button
@@ -111,4 +110,3 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
 };
 
 export default Navbar;
-

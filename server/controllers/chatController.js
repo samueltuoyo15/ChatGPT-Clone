@@ -1,7 +1,6 @@
 import {User, Conversation }from '../models/User.js';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import {Readable} from 'stream'
 dotenv.config();
 
 const API_KEY = process.env.GOOGLE_API_KEY;
