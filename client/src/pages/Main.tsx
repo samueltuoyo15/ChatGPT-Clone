@@ -32,13 +32,13 @@ const Main = () => {
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<Session>({});
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [fetchedConversations, setFetchedConversations] = useState<Conversation[] | null>([])
+  const [fetchedConversations, setFetchedConversations] = useState<Conversation[]>([])
   const { id } = useParams();
 
   useEffect(() => {
     const ConById = async () => {
       try {
-        const response = await (`${import.meta.env.VITE__BY_ID}${id}`);
+        const response = await fetch(`${import.meta.env.VITE__BY_ID}${id}`);
         const data = await response.json();
         if (!response.ok) return console.error(data.message);
         setConversation(data.messages);
@@ -64,43 +64,44 @@ const Main = () => {
       setSession({});
     }
   }, []);
-  
-/*useEffect(() => {
-    const saveConversation = async () => {
-      if (!session.email) return;
+  useEffect(() => {
+    
+  const saveConversation = async () => {
+    if (!session.email) return;
 
-      try {
-        const formattedMessages = conversation.map(msg => ({
-          sender: msg.sender,
-          content: msg.message,
-          timestamp: msg.timestamp
-        }));
+    try {
+      const formattedMessages = conversation.map((msg) => ({
+        sender: msg.sender,
+        content: msg.message,
+        timestamp: msg.timestamp,
+      }));
 
-        const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: session?.email,
-    conversation: {
-      groupName: "Default Group Name", 
-      messages: formattedMessages,
-    },
-  }),
-});
+      const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session?.email,
+          conversation: {
+            groupName: "Default Group Name",
+            messages: formattedMessages,
+          },
+        }),
+      });
 
+      if (!res.ok) throw new Error("Failed to save conversation");
 
-        const data = await res.json();
-        console.log("Conversation saved:", data);
-      } catch (error) {
-        console.error("Error saving conversation:", error);
-      }
-    };
-
-    if (conversation.length > 0) {
-      saveConversation();
+      const data = await res.json();
+      console.log("Conversation saved:", data);
+    } catch (error) {
+      console.error("Error saving conversation:", error);
     }
-  }, [conversation, session?.email]);
-*/
+  };
+
+  if (conversation.length > 0) saveConversation();
+}, [conversation, session?.email]);
+
+
+
   useEffect(() => {
     const getConv = async () => {
       if (!session || !session?.email) {
@@ -157,9 +158,7 @@ const Main = () => {
     if (!res.ok) throw new Error("Failed to fetch content");
 
     const data = await res.json();
-    const fullMessage = isImagePrompt
-      ? `<img src="${data.response}" alt="Generated Image" />`
-      : data.response;
+    const fullMessage = data.response;
 
     setConversation((prev) => [
       ...prev,
@@ -181,15 +180,15 @@ const Main = () => {
 };
 
 
-
- const handleQuickGenerate = (content: string) => {
+const handleQuickGenerate = (content: string) => {
   setInput(content);
   handleGenerate({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>);
 };
 
+
   const startNewConversation = async () => {
     try {
-      const response = await (import.meta.env.VITE_CREATE_CONV_URL, {
+      const response = await fetch(`${import.meta.env.VITE_CREATE_CONV_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: session?.id, groupName: "New Conversation", messages: [] }),
@@ -219,7 +218,7 @@ const Main = () => {
 
   return (
     <section className="bg-zinc-800">
-      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations}/>
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations || []}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
           <>
@@ -273,9 +272,17 @@ const Main = () => {
                 {isAIMessage ? (
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
-                    <div>
-                      <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">{chat.message}</ReactMarkdown>
+                    <div>{chat.message.startsWith("data:image/") ? (
+                     <img src={chat.message} alt="Generated Content" className="rounded-lg mt-2" />
+                      ) : (
+                     <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
+                         {chat.message}
+                     </ReactMarkdown>
+                    )}
+                      
                       <div className="ml-10">
+                        {!chat.message.startsWith("data:image/") ? (
+                        <>
                         <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
                         <FaVolumeUp
                           className="inline mt-4 text-sm text-white ml-3"
@@ -296,7 +303,9 @@ const Main = () => {
                             };
                             navigator.share(shareData);
                           }}
-                        />
+                        /> </>):(
+                         <span></span>
+                        )}
                       </div>
                     </div>
                   </>
