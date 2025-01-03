@@ -162,8 +162,9 @@ export const generate = async (req, res) => {
         throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
 
-      const result = await response.json();
-
+      const buffer = await response.arrayBuffer();
+      const base64Image = Buffer.from(buffer).toString("base64")
+      const result = `data:image/png;base64,${base64Image}`
       if (result.error) {
         throw new Error(`Hugging Face API error: ${result.error}`);
       }
