@@ -32,13 +32,13 @@ const Main = () => {
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const [session, setSession] = useState<Session>({});
   const [showSettings, setShowSettings] = useState<boolean>(false);
-
+  const [fetchedConversations, setFetchedConversations] = useState<Conversation[] | null>([])
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchConById = async () => {
+    const ConById = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_FETCH_BY_ID}${id}`);
+        const response = await (`${import.meta.env.VITE__BY_ID}${id}`);
         const data = await response.json();
         if (!response.ok) return console.error(data.message);
         setConversation(data.messages);
@@ -47,7 +47,7 @@ const Main = () => {
       }
     };
     if (id) {
-      fetchConById();
+      ConById();
     }
   }, [id]);
 
@@ -64,7 +64,8 @@ const Main = () => {
       setSession({});
     }
   }, []);
-useEffect(() => {
+  
+/*useEffect(() => {
     const saveConversation = async () => {
       if (!session.email) return;
 
@@ -76,16 +77,17 @@ useEffect(() => {
         }));
 
         const res = await fetch(import.meta.env.VITE_SAVECONV_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: session?.email,
-            conversation: {
-              groupName: "Default Group Name", 
-              messages: formattedMessages,
-            },
-          }),
-        });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: session?.email,
+    conversation: {
+      groupName: "Default Group Name", 
+      messages: formattedMessages,
+    },
+  }),
+});
+
 
         const data = await res.json();
         console.log("Conversation saved:", data);
@@ -98,7 +100,7 @@ useEffect(() => {
       saveConversation();
     }
   }, [conversation, session?.email]);
-
+*/
   useEffect(() => {
     const getConv = async () => {
       if (!session || !session?.email) {
@@ -110,63 +112,75 @@ useEffect(() => {
           `${import.meta.env.VITE_GETCONV_URL}?email=${session?.email}`
         );
         const data = await res.json();
-        console.log("Fetched conversations:", data);
-        setConversations(data);
+        setFetchedConversations(data);
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.error("Error ing conversations:", error);
       }
     };
     getConv();
   }, [session]);
 
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  e.preventDefault();
+  if (!input.trim()) return;
 
-    setConversation((prev) => [...prev, { sender: "user", message: input, timestamp: new Date().toISOString() }]);
-    setLoading(true);
+  const imageKeywords = [
+    "draw",
+    "illustrate",
+    "sketch",
+    "visualize",
+    "create an image of",
+    "design",
+    "generate an image",
+    "picture of",
+    "art of",
+  ];
 
-    try {
-      const res = await fetch(import.meta.env.VITE_BASE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: input }),
-      });
+  const isImagePrompt = imageKeywords.some((keyword) =>
+    input.toLowerCase().includes(keyword)
+  );
 
-      const data = await res.json();
-      const fullMessage = data.response;
-      let currentMessage = "";
+  setConversation((prev) => [
+    ...prev,
+    { sender: "user", message: input, timestamp: new Date().toISOString() },
+  ]);
+  setLoading(true);
 
-      setConversation((prev) => [...prev, { sender: "ai", message: "", timestamp: new Date().toISOString() }]);
-      setLoading(false);
-      for (let i = 0; i < fullMessage.length; i++) {
-        currentMessage += fullMessage[i];
+  try {
+    const res = await fetch(import.meta.env.VITE_BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
+    });
 
-        setConversation((prev) => {
-          const updated = [...prev];
-          const lastIndex = updated.length - 1;
-          if (updated[lastIndex]?.sender === "ai") {
-            updated[lastIndex].message = currentMessage;
-          }
-          return updated;
-        });
+    if (!res.ok) throw new Error("Failed to fetch content");
 
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
+    const data = await res.json();
+    const fullMessage = isImagePrompt
+      ? `<img src="${data.response}" alt="Generated Image" />`
+      : data.response;
 
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-    } catch {
-      setConversation((prev) => [
-        ...prev,
-        { sender: "ai", message: "Error generating content.", timestamp: new Date().toISOString() },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+    setConversation((prev) => [
+      ...prev,
+      { sender: "ai", message: fullMessage, timestamp: new Date().toISOString() },
+    ]);
+    console.log(data.response);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  } catch (error) {
+    console.error(error);
+    setConversation((prev) => [
+      ...prev,
+      { sender: "ai", message: "Error generating content.", timestamp: new Date().toISOString() },
+    ]);
+  } finally {
+    setLoading(false);
+  }
 
-    setInput("");
-  };
+  setInput("");
+};
+
+
 
  const handleQuickGenerate = (content: string) => {
   setInput(content);
@@ -175,7 +189,7 @@ useEffect(() => {
 
   const startNewConversation = async () => {
     try {
-      const response = await fetch(import.meta.env.VITE_CREATE_CONV_URL, {
+      const response = await (import.meta.env.VITE_CREATE_CONV_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: session?.id, groupName: "New Conversation", messages: [] }),
@@ -205,7 +219,7 @@ useEffect(() => {
 
   return (
     <section className="bg-zinc-800">
-      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={conversations}/>
+      <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
           <>
