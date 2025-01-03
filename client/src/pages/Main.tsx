@@ -41,7 +41,7 @@ const Main = () => {
         const response = await fetch(`${import.meta.env.VITE__BY_ID}${id}`);
         const data = await response.json();
         if (!response.ok) return console.error(data.message);
-        setConversation(data.messages);
+        setConversation(data.messages)
       } catch (error) {
         console.error(error);
       }
@@ -91,7 +91,6 @@ const Main = () => {
       if (!res.ok) throw new Error("Failed to save conversation");
 
       const data = await res.json();
-      console.log("Conversation saved:", data);
     } catch (error) {
       console.error("Error saving conversation:", error);
     }
@@ -125,21 +124,14 @@ const Main = () => {
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   if (!input.trim()) return;
+   const imageKeywords = {
+      verbs: ["draw", "illustrate", "sketch", "visualize", "create", "design", "generate", "paint"],
+      nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "illustration"],
+    };
 
-  const imageKeywords = [
-    "draw",
-    "illustrate",
-    "sketch",
-    "visualize",
-    "create an image of",
-    "design",
-    "generate an image",
-    "picture of",
-    "art of",
-  ];
-  const isImagePrompt = imageKeywords.some((keyword) =>
-    input.toLowerCase().includes(keyword)
-  );
+    const lowerInput = input.toLowerCase();
+    const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
+    const isImagePrompt = regex.test(lowerInput) || (imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) && imageKeywords.nouns.some((noun) => lowerInput.includes(noun)));
 
   setConversation((prev) => [
     ...prev,
@@ -163,7 +155,6 @@ const Main = () => {
       ...prev,
       { sender: "ai", message: fullMessage, timestamp: new Date().toISOString() },
     ]);
-    console.log(data.response);
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   } catch (error) {
     console.error(error);

@@ -31,9 +31,11 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
   };
 
   const formatTimestamp = (timestamp: string) => {
-    if (!timestamp) return "Invalid date";
+    if (!timestamp) return "No messages yet"; 
     try {
-      return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+      const parsedDate = new Date(timestamp);
+      if (isNaN(parsedDate.getTime())) return "Invalid date"; 
+      return formatDistanceToNow(parsedDate, { addSuffix: true });
     } catch (error) {
       console.error("Error formatting timestamp:", error);
       return "Invalid date";
@@ -63,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
             conversations.map((conv) => (
               <Link 
                 key={conv?._id}
-                to={`/conversation/${conv?._id}`}
+                to={`/c/${conv?._id}`}
                 onClick={() => handleConversationSelect(conv?._id)}
                 className={`px-4 py-3 cursor-pointer hover:bg-zinc-700 ${
                   currentConvId === conv?._id ? "bg-zinc-700" : ""
@@ -71,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNa
               >
                 <div className="flex justify-between items-center">
                   <p className="truncate">{conv.groupName || "Untitled Conversation"}</p>
-                  <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="p-2 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <p className="text-sm text-zinc-400">
                       {conv.messages && conv.messages.length > 0
                         ? formatTimestamp(conv.messages[conv.messages.length - 1]?.timestamp || '')
