@@ -137,7 +137,6 @@ const Main = () => {
     "picture of",
     "art of",
   ];
-
   const isImagePrompt = imageKeywords.some((keyword) =>
     input.toLowerCase().includes(keyword)
   );
