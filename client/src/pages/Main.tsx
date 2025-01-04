@@ -205,9 +205,9 @@ const handleQuickGenerate = (content: string) => {
 
   const toggleNav = () => setShowSettings((prev) => !prev);
   const closeNav = () => setShowSettings(false);
-
+  
   return (
-    <section onClick={(e) => e.currentTarget !== e.target ? closeNav : null} className="bg-zinc-800 min-h-screen">
+    <section className="bg-zinc-800 min-h-screen">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations || []}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
@@ -321,10 +321,10 @@ const handleQuickGenerate = (content: string) => {
           </div>
 
           <button
-          disabled={input.length > 0 ? "false" : "true"}
+          disabled={input.length > 0 ? false : true}
           ref={sendButtonRef} 
           type="submit"
-          className={`${input.length > 0 ? "bg-zinc-800" : "bg-zinc-400"} absolute top-2 right-2 h-10 w-10 text-xl rounded-full text-white z-10`}
+          className={`${input.length > 0 ? "bg-white" : "bg-zinc-500"} absolute top-2 right-2 h-10 w-10 text-xl rounded-full text-zinc-700 z-10`}
           >
             <FaArrowUp className="inline" />
           </button>
