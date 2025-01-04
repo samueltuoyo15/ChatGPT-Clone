@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import NavBarModal from './NavBarModal';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
+import { format, isToday, isYesterday, differenceInDays, differenceInYears, parseISO } from 'date-fns';
 
 interface Conversation {
   _id: string;
@@ -24,23 +24,41 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ conversations, isOpen, session, closeNav }) => {
   const [currentConvId, setCurrentConvId] = useState<string | null>(null);
   const [toggleSettings, setToggleSettings] = useState<boolean>(false);
-
+  
   const groupedConversations = useMemo(() => {
-    const grouped: Record<string, Conversation[]> = { Today: [], Yesterday: [], Older: [] };
+    const grouped: Record<string, Conversation[]> = { 
+      Today: [],
+      Yesterday: [],
+      "Last 7 Days": [],
+      "Last 30 Days": [],
+      "Last Year": [],
+      Older: [],
+    };
 
     conversations.forEach((conv) => {
       const lastMessage = conv.messages[conv.messages.length - 1];
       const timestamp = lastMessage?.timestamp || null;
-
-      if (timestamp) {
+     if (timestamp) {
         const date = parseISO(timestamp);
+        const daysAgo = differenceInDays(new Date(), date);
 
-        if (isToday(date)) grouped.Today.push(conv);
-        else if (isYesterday(date)) grouped.Yesterday.push(conv);
-        else grouped.Older.push(conv);
+        if (isToday(date)) {
+          grouped.Today.push(conv);
+        } else if (isYesterday(date)) {
+          grouped.Yesterday.push(conv);
+        } else if (daysAgo <= 7) {
+          grouped["Last 7 Days"].push(conv);
+        } else if (daysAgo <= 30) {
+          grouped["Last 30 Days"].push(conv);
+        } else if (differenceInYears(new Date(), date) === 0) {
+          grouped["Last Year"].push(conv);
+        } else {
+          grouped.Older.push(conv);
+        }
       } else {
-        grouped.Older.push(conv); // Default to "Older" if no timestamp
+        grouped.Older.push(conv); 
       }
+      
     });
 
     return grouped;
