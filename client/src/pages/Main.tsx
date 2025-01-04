@@ -207,7 +207,7 @@ const handleQuickGenerate = (content: string) => {
   const closeNav = () => setShowSettings(false);
 
   return (
-    <section className="bg-zinc-800">
+    <section className="bg-zinc-800 min-h-screen">
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations || []}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
