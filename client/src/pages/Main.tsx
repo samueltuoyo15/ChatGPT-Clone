@@ -263,7 +263,7 @@ const handleQuickGenerate = (content: string) => {
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>{chat.message.startsWith("data:image/") ? (
-                     <img src={chat.message} alt="Generated Content" className="rounded-lg mt-2" />
+                     <img src={chat.message} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />
                       ) : (
                      <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
                          {chat.message}
