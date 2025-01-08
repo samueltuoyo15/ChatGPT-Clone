@@ -7,7 +7,7 @@ dotenv.config();
 
 interface Messages{
   sender: string;
-  content: string[];
+  content: string;
   timestamp: Date;
 }
 
@@ -52,7 +52,7 @@ export const saveConversation = async (req: Request, res: Response): Promise<any
       groupName: conversation.groupName || "Untitled Conversation",
       messages: conversation.messages.map((msg : Messages) => ({
         sender: msg.sender,
-        content: msg.message || msg.content,
+        content: msg.content,
         timestamp: msg.timestamp || new Date(),
       })),
     });
@@ -173,7 +173,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const buffer = await response.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString("base64")
       const result = `data:image/png;base64,${base64Image}`
-      if (result.error) {
+      if (result.error : string) {
         throw new Error(`Hugging Face API error: ${result.error}`);
       }
 
@@ -185,6 +185,9 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
     }
   } catch (error: any) {
     console.error("Error generating content:", error);
-    res.status(500).json({ message: "Failed to generate content", error: error.message });
+     res.status(500).json({
+      message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
