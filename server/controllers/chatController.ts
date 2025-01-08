@@ -6,9 +6,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 
 interface Messages{
-  sender: string ;
-  content: [];
-  timestamp: new Date;
+  sender: string;
+  message: string || string[];
+  timestamp: Date || null;
 }
 
 const API_KEY = process.env.GOOGLE_API_KEY;
@@ -31,7 +31,7 @@ export const createConversation = async (req: Request, res: Response): Promise<a
 
     const savedConversation = await newConversation.save();
     res.status(201).json(savedConversation);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating conversation:", error);
     res.status(500).json({ error: "Failed to create conversation." });
   }
@@ -50,7 +50,7 @@ export const saveConversation = async (req: Request, res: Response): Promise<any
     const newConversation = new Conversation({
       userId: user._id,
       groupName: conversation.groupName || "Untitled Conversation",
-      messages: conversation.messages.map((msg : Messages[]) => ({
+      messages: conversation.messages.map((msg : Messages) => ({
         sender: msg.sender,
         content: msg.message || msg.content,
         timestamp: msg.timestamp || new Date(),
@@ -62,7 +62,7 @@ export const saveConversation = async (req: Request, res: Response): Promise<any
     await user.save();
 
     res.status(200).json({ message: "Conversation saved successfully", conversationId: newConversation._id });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error saving conversation:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
@@ -77,7 +77,7 @@ export const getConversations = async (req: Request, res: Response): Promise<any
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user.conversations);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching conversations:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -94,14 +94,14 @@ export const getConversationById = async (req: Request, res: Response): Promise<
     const formattedConversation = {
       _id: conversation._id,
       groupName: conversation.groupName,
-      messages: conversation.messages.map((msg) => ({
+      messages: conversation.messages.map((msg : Messages) => ({
         sender: msg.sender,
         message: msg.content,
         timestamp: msg.timestamp,
       })),
     };
     res.json(formattedConversation);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching conversation:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -131,7 +131,7 @@ export const deleteConversation = async (req : Request, res: Response): Promise<
     await user.save();
 
     res.status(200).json({ message: "Conversation deleted successfully" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting conversation:", error);
     res.status(500).json({ message: "Failed to delete conversation" });
   }
@@ -173,7 +173,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const buffer = await response.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString("base64")
       const result = `data:image/png;base64,${base64Image}`
-      if (result.error as any) {
+      if (result.error: unknown) {
         throw new Error(`Hugging Face API error: ${result.error}`);
       }
 
@@ -183,7 +183,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const result = await textModel.generateContent(userPrompt);
       res.status(200).json({ response: result.response.text().trim() });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error generating content:", error);
     res.status(500).json({ message: "Failed to generate content", error: error.message });
   }
