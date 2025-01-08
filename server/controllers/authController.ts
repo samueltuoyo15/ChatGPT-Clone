@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import {User} from "../models/User";
 dotenv.config();
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
@@ -17,8 +17,8 @@ export const registerUser = async (req: Request, res: Response) => {
     const newUser = await User.create({ email, password: encryptedPassword });
     const token = jwt.sign(
       { userId: newUser._id },
-      process.env.JWT_SECRET || null,
-      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || null }
+      process.env.JWT_SECRET || 'invalid',
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || 'invalid' }
     );
 
     return res.status(201).json({
@@ -36,7 +36,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password} = req.body;
   try {
     const user = await User.findOne({ email });
@@ -50,8 +50,8 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET || null,
-      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || null }
+      process.env.JWT_SECRET || 'invalid',
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || 'invalid' }
     );
 
     return res.status(200).json({
