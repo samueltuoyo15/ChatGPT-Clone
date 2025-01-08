@@ -1,11 +1,12 @@
 import {createConversation, saveConversation, getConversations, deleteConversation, getConversationById, generate, } from '../controllers/chatController';
-import express, {Router} from 'express';
-const router: Router = express.Router();
+import {Router} from 'express';
 
-router.post('/newChat', createConversation)
-router.get('/fetchChats', getConversations);
-router.post('/saveChats', saveConversation);
-router.get('/fetchChatId/:id', getConversationById)
-router.delete('/conversation', deleteConversation)
-router.post('/gpt', generate)
+const router: Router = Router();
+
+router.post('/newChat', createConversation.perform)
+router.get('/fetchChats', getConversations.perform);
+router.post('/saveChats', saveConversation.perform);
+router.get('/fetchChatId/:id', getConversationById.perform)
+router.delete('/conversation', deleteConversation.perform)
+router.post('/gpt', generate.perform)
 export default router;
