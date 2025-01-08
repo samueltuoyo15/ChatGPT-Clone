@@ -173,9 +173,9 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const buffer = await response.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString("base64")
       const result = `data:image/png;base64,${base64Image}`
-      if (result.error : string) {
-        throw new Error(`Hugging Face API error: ${result.error}`);
-      }
+      //if (result.error) {
+       // throw new Error(`Hugging Face API error: ${result.error}`);
+      //}
 
      res.status(200).json({ response: result});
     
@@ -191,3 +191,4 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
     });
   }
 };
+
