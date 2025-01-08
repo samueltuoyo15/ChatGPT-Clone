@@ -3,10 +3,10 @@ import {Router} from 'express';
 
 const router: Router = Router();
 
-router.post('/newChat', createConversation.perform)
-router.get('/fetchChats', getConversations.perform);
-router.post('/saveChats', saveConversation.perform);
-router.get('/fetchChatId/:id', getConversationById.perform)
-router.delete('/conversation', deleteConversation.perform)
-router.post('/gpt', generate.perform)
+router.post('/newChat', createConversation)
+router.get('/fetchChats', getConversations);
+router.post('/saveChats', saveConversation);
+router.get('/fetchChatId/:id', getConversationById)
+router.delete('/conversation', deleteConversation)
+router.post('/gpt', generate)
 export default router;
