@@ -1,3 +1,4 @@
+import {Request, Response} from "express";
 import { User, Conversation } from "../models/User";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
@@ -11,7 +12,7 @@ const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const HUGGING_FACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large";
 const HUGGING_FACE_API_KEY = process.env.HUGGING_FACE_API_KEY;
 
-export const createConversation = async (req, res) => {
+export const createConversation = async (req: Request, res: Response) => {
   try {
     const { userId, groupName, messages } = req.body;
     if (!groupName) return res.status(400).json({ error: "Group name is required." });
@@ -30,7 +31,7 @@ export const createConversation = async (req, res) => {
   }
 };
 
-export const saveConversation = async (req, res) => {
+export const saveConversation = async (req: Request, res: Response) => {
   const { email, conversation } = req.body;
   if (!email || !conversation || !Array.isArray(conversation.messages)) {
     return res.status(400).json({ message: "Invalid input data" });
@@ -61,7 +62,7 @@ export const saveConversation = async (req, res) => {
   }
 };
 
-export const getConversations = async (req, res) => {
+export const getConversations = async (req: Request, res: Response) => {
   const { email } = req.query;
   try {
     if (!email) return res.status(400).json({ message: "Email is required" });
@@ -77,7 +78,7 @@ export const getConversations = async (req, res) => {
 };
 
 
-export const getConversationById = async (req, res) => {
+export const getConversationById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const conversation = await Conversation.findById(id);
@@ -100,7 +101,7 @@ export const getConversationById = async (req, res) => {
   }
 };
 
-export const deleteConversation = async (req, res) => {
+export const deleteConversation = async (req : Request, res: Response) => {
   const { email, conversationId } = req.body;
   if (!email || !conversationId) {
     return res.status(400).json({ message: "Email and conversation ID are required" });
@@ -130,7 +131,7 @@ export const deleteConversation = async (req, res) => {
   }
 };
 
-export const generate = async (req, res) => {
+export const generate = async (req: Request, res: Response) => {
   const { prompt, type } = req.body;
 
   if (!prompt || typeof prompt !== "string") {
@@ -138,8 +139,8 @@ export const generate = async (req, res) => {
   }
   
   const systemInstructions = `
-    You are a smart and friendly ChatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo,
-    a Full Stack Developer.
+    You are a smart and non friendly but 10x smart ChatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo,
+    a Mern Stack Developer.
   `;
   const userPrompt = `
     ${systemInstructions}
