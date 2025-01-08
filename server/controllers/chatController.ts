@@ -5,14 +5,20 @@ import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 
+interface Messages{
+  sender: string ;
+  content: [];
+  timestamp: new Date;
+}
+
 const API_KEY = process.env.GOOGLE_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI(API_KEY || 'null');
 const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const HUGGING_FACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large";
-const HUGGING_FACE_API_KEY = process.env.HUGGING_FACE_API_KEY;
+const HUGGING_FACE_API_KEY = process.env.HUGGING_FACE_API_KEY || 'null';
 
-export const createConversation = async (req: Request, res: Response) => {
+export const createConversation = async (req: Request, res: Response): Promise<any> => {
   try {
     const { userId, groupName, messages } = req.body;
     if (!groupName) return res.status(400).json({ error: "Group name is required." });
@@ -25,13 +31,13 @@ export const createConversation = async (req: Request, res: Response) => {
 
     const savedConversation = await newConversation.save();
     res.status(201).json(savedConversation);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating conversation:", error);
     res.status(500).json({ error: "Failed to create conversation." });
   }
 };
 
-export const saveConversation = async (req: Request, res: Response) => {
+export const saveConversation = async (req: Request, res: Response): Promise<any> => {
   const { email, conversation } = req.body;
   if (!email || !conversation || !Array.isArray(conversation.messages)) {
     return res.status(400).json({ message: "Invalid input data" });
@@ -44,7 +50,7 @@ export const saveConversation = async (req: Request, res: Response) => {
     const newConversation = new Conversation({
       userId: user._id,
       groupName: conversation.groupName || "Untitled Conversation",
-      messages: conversation.messages.map((msg) => ({
+      messages: conversation.messages.map((msg : Messages[]) => ({
         sender: msg.sender,
         content: msg.message || msg.content,
         timestamp: msg.timestamp || new Date(),
@@ -56,13 +62,13 @@ export const saveConversation = async (req: Request, res: Response) => {
     await user.save();
 
     res.status(200).json({ message: "Conversation saved successfully", conversationId: newConversation._id });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving conversation:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
-export const getConversations = async (req: Request, res: Response) => {
+export const getConversations = async (req: Request, res: Response): Promise<any> => {
   const { email } = req.query;
   try {
     if (!email) return res.status(400).json({ message: "Email is required" });
@@ -71,14 +77,14 @@ export const getConversations = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user.conversations);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching conversations:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 
-export const getConversationById = async (req: Request, res: Response) => {
+export const getConversationById = async (req: Request, res: Response): Promise<any>=> {
   const { id } = req.params;
   try {
     const conversation = await Conversation.findById(id);
@@ -95,13 +101,13 @@ export const getConversationById = async (req: Request, res: Response) => {
       })),
     };
     res.json(formattedConversation);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching conversation:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-export const deleteConversation = async (req : Request, res: Response) => {
+export const deleteConversation = async (req : Request, res: Response): Promise<any>=> {
   const { email, conversationId } = req.body;
   if (!email || !conversationId) {
     return res.status(400).json({ message: "Email and conversation ID are required" });
@@ -125,13 +131,13 @@ export const deleteConversation = async (req : Request, res: Response) => {
     await user.save();
 
     res.status(200).json({ message: "Conversation deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting conversation:", error);
     res.status(500).json({ message: "Failed to delete conversation" });
   }
 };
 
-export const generate = async (req: Request, res: Response) => {
+export const generate = async (req: Request, res: Response): Promise<any> => {
   const { prompt, type } = req.body;
 
   if (!prompt || typeof prompt !== "string") {
@@ -167,7 +173,7 @@ export const generate = async (req: Request, res: Response) => {
       const buffer = await response.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString("base64")
       const result = `data:image/png;base64,${base64Image}`
-      if (result.error) {
+      if (result.error as any) {
         throw new Error(`Hugging Face API error: ${result.error}`);
       }
 
@@ -177,7 +183,7 @@ export const generate = async (req: Request, res: Response) => {
       const result = await textModel.generateContent(userPrompt);
       res.status(200).json({ response: result.response.text().trim() });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating content:", error);
     res.status(500).json({ message: "Failed to generate content", error: error.message });
   }
