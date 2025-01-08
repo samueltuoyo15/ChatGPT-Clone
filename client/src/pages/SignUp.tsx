@@ -40,11 +40,12 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
   const handleSocialAuth = async (provider: string) => {
     try{
       await loginWithRedirect({connection: provider,} as any)
-      console.log('Success')
+      alert('Success SignUp')
     }catch(error){
-      console.log(provider +' social login error ' + error)
+      console.log(provider +' social signUp error ' + error)
     }
-  }
+  };
+  
   return(
     <section className="p-4 text-center">
       <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-10 mt-7 mx-auto mb-10"/>
@@ -81,7 +82,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
         <span className="flex-grow h-px bg-gray-200"></span>
       </div>
       
-      {/* sign up with a auth provider*/}  
+       {/* sign up with a auth provider*/}  
           <div
             onClick={() => handleSocialAuth('google-o-auth2')}
             className="border-2 mb-4 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
@@ -91,7 +92,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
           </div>
           
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialAuth('windowslive')}
             className="mb-4 border-2 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/microsoft.png"  alt="Microsoft logo" className="w-12" />
@@ -99,7 +100,7 @@ const SignUp = ({setIsAuthenticated}: SignUpProps) => {
           </div>
           
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialAuth('apple')}
             className="mb-4 border-2 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/apple.png"  alt="Appl logo" className="w-12" />

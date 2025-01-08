@@ -1,5 +1,6 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface LoginProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void
@@ -10,6 +11,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const {loginWithRedirect, loginWithPopup} = useAuth0();
   const navigate = useNavigate()
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -35,6 +37,16 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       console.error(error)
     }
   }
+  
+  const handleSocialLogin = async (provider: string) => {
+    try{
+      await loginWithRedirect({connection: provider,} as any);
+      alert('success login in');
+    }
+    catch(error: any){
+      console.error(error + provider + 'login error')
+    }
+  };
   return(
       <section className="p-4 text-center">
       <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="block w-10 mt-7 mx-auto mb-10"/>
@@ -70,9 +82,9 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
         <span className="flex-grow h-px bg-gray-200"></span>
       </div>
       
-      {/* sign up with a auth provider*/}  
+      {/* SignIn with a auth provider*/}  
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialLogin('google-o-auth2')}
             className="border-2 mb-4 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/google.png" alt="Google logo" className="w-14" />
@@ -80,7 +92,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
           </div>
           
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialLogin('windowslive')}
             className="mb-4 border-2 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/microsoft.png"  alt="Microsoft logo" className="w-12" />
@@ -88,7 +100,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
           </div>
           
           <div
-            onClick={() => alert ('hello world')}
+            onClick={() => handleSocialLogin('apple')}
             className="mb-4 border-2 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/apple.png"  alt="Appl logo" className="w-12" />
