@@ -1,4 +1,4 @@
-import { User, Conversation } from "../models/User.js";
+import { User, Conversation } from "../models/User";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";

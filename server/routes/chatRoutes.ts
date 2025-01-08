@@ -1,4 +1,4 @@
-import {createConversation, saveConversation, getConversations, deleteConversation, getConversationById, generate, } from '../controllers/chatController.js';
+import {createConversation, saveConversation, getConversations, deleteConversation, getConversationById, generate, } from '../controllers/chatController';
 import express from 'express';
 const router = express.Router();
 

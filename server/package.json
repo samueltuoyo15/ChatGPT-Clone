@@ -1,11 +1,9 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "server.js",
-  "type": "module",
+  "main": "server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.ts"
   },
   "keywords": [],
   "author": "OritseWeyinmi Samuel Tuoyo",
@@ -18,12 +16,23 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-jwt": "^8.5.1",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
     "mongoose": "^8.8.3",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^9.17.0",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }

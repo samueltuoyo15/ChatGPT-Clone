@@ -1,11 +1,12 @@
+import {req: Requestuest, Response} from "express";
 import bcrypt from 'bcryptjs'
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import {User} from "../models/User.js";
+import {User} from "../models/User";
 dotenv.config();
 
-export const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+export const registerUser = async (req: Request, res: Response) => {
+  const { email, password } = req: Request.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -16,8 +17,8 @@ export const registerUser = async (req, res) => {
     const newUser = await User.create({ email, password: encryptedPassword });
     const token = jwt.sign(
       { userId: newUser._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN }
+      process.env.JWT_SECRET || null,
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || null }
     );
 
     return res.status(201).json({
@@ -35,8 +36,8 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
-  const { email, password} = req.body;
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password} = req: Request.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -49,8 +50,8 @@ export const loginUser = async (req, res) => {
     }
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN }
+      process.env.JWT_SECRET || null,
+      { expiresIn: process.env.JWT_SECRET_EXPIRES_IN || null }
     );
 
     return res.status(200).json({

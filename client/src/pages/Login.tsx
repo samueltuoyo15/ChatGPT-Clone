@@ -11,8 +11,10 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const {loginWithRedirect, loginWithPopup} = useAuth0();
+  const {loginWithRedirect} = useAuth0();
+  
   const navigate = useNavigate()
+  
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if(!email.trim()) return setError('please provide an email')
@@ -84,7 +86,7 @@ const Login = ({setIsAuthenticated}: LoginProps) => {
       
       {/* SignIn with a auth provider*/}  
           <div
-            onClick={() => handleSocialLogin('google-o-auth2')}
+            onClick={() => handleSocialLogin('google-oauth2')}
             className="border-2 mb-4 flex items-center rounded bg-white pl-2 pr-4 px-5 text-black"
             >
            <img src="/google.png" alt="Google logo" className="w-14" />
