@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import {User} from "../models/User";
 dotenv.config();
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export const registerUser = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
@@ -36,7 +36,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
+export const loginUser = async (req: Request, res: Response): Promise<Response> => {
   const { email, password} = req.body;
   try {
     const user = await User.findOne({ email });

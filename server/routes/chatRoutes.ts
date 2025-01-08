@@ -1,6 +1,6 @@
 import {createConversation, saveConversation, getConversations, deleteConversation, getConversationById, generate, } from '../controllers/chatController';
-import express from 'express';
-const router = express.Router();
+import express, {Router} from 'express';
+const router: Router = express.Router();
 
 router.post('/newChat', createConversation)
 router.get('/fetchChats', getConversations);
