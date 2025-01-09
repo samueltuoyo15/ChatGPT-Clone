@@ -183,7 +183,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const finalResult = `data:image/png;base64,${base64Image}`;
       res.status(200).json({ response: finalResult });
     } else {
-      const result = await textModel.generateContent(userPrompt);
+      const result: string | null = await textModel.generateContent(userPrompt);
       if (result && typeof result.response === "string") {
         res.status(200).json({ response: result.response.trim() });
       } else {
