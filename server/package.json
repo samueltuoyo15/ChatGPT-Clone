@@ -19,17 +19,16 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
-    "mongoose": "^8.8.3",
-    "node-fetch": "^3.3.2"
+    "mongoose": "^8.8.3"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.5",
-    "@types/node-fetch": "^2.6.12",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "eslint": "^9.17.0",

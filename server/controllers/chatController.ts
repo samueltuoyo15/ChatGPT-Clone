@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import { User, Conversation } from "../models/User";
 import dotenv from "dotenv";
-import fetch, {Response} from "node-fetch";
+import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 
@@ -12,6 +12,7 @@ interface Messages{
 }
 
 type HuggingFaceResponse = {
+  response?: string; 
   error?: string; 
   [key: string]: any; 
 };
@@ -149,9 +150,9 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
   if (!prompt || typeof prompt !== "string") {
     return res.status(400).json({ message: "Invalid or missing prompt" });
   }
-  
+
   const systemInstructions = `
-    You are a smart and non friendly but 10x smart ChatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo,
+    You are a smart and non-friendly but 10x smart ChatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo,
     a Mern Stack Developer.
   `;
   const userPrompt = `
@@ -163,41 +164,42 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
 
   try {
     if (type === "image") {
-     const response = await fetch(HUGGING_FACE_API_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: prompt }),
-      });
+      const response = await axios.post(
+        HUGGING_FACE_API_URL,
+        { inputs: prompt },
+        {
+          headers: {
+            Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          responseType: "arraybuffer", 
+        }
+      );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
-      
-      const result: HuggingFaceResponse = await response.json();
-
-       if (result.error) {
-       throw new Error(`Hugging Face API error: ${result.error}`);
-       }
-       
-       const buffer = await response.arrayBuffer();
-      const base64Image = Buffer.from(buffer).toString("base64")
-      const finalResult = `data:image/png;base64,${base64Image}`
-
-     res.status(200).json({ response: finalResult});
-    
+       const base64Image = Buffer.from(response.data as ArrayBuffer).toString("base64");
+      const finalResult = `data:image/png;base64,${base64Image}`;
+      res.status(200).json({ response: finalResult });
     } else {
       const result = await textModel.generateContent(userPrompt);
-      res.status(200).json({ response: result.response.text().trim() });
+      if (result && typeof result.response === "string") {
+        res.status(200).json({ response: result.response.trim() });
+      } else {
+        console.error("Unexpected response type:", typeof result.response);
+        res.status(500).json({
+          message: "Unexpected response type from the model",
+          error: "Response is not a string",
+        });
+      }
     }
   } catch (error: any) {
     console.error("Error generating content:", error);
-     res.status(500).json({
+
+    res.status(500).json({
       message: "Internal server error",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
-
