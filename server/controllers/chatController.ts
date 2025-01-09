@@ -186,8 +186,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
     } else {
       const result = await textModel.generateContent(userPrompt);
 
-      // Directly type result.response as string | undefined
-      const response: string | undefined = result.response;
+     const response: string | undefined = result.response.text();
 
       if (typeof response === "string") {
         res.status(200).json({ response: response.trim() });
