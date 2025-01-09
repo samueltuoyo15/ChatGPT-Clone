@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import { User, Conversation } from "../models/User";
 import dotenv from "dotenv";
-import fetch from "node-fetch";
+import fetch, {Response} from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 
@@ -10,6 +10,12 @@ interface Messages{
   content: string;
   timestamp: Date;
 }
+
+type HuggingFaceResponse = {
+  error?: string; 
+  [key: string]: any; 
+};
+
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY || 'null');
@@ -169,15 +175,18 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       if (!response.ok) {
         throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
+      
+      const result: HuggingFaceResponse = await response.json();
 
-      const buffer = await response.arrayBuffer();
+       if (result.error) {
+       throw new Error(`Hugging Face API error: ${result.error}`);
+       }
+       
+       const buffer = await response.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString("base64")
-      const result = `data:image/png;base64,${base64Image}`
-      //if (result.error) {
-       // throw new Error(`Hugging Face API error: ${result.error}`);
-      //}
+      const finalResult = `data:image/png;base64,${base64Image}`
 
-     res.status(200).json({ response: result});
+     res.status(200).json({ response: finalResult});
     
     } else {
       const result = await textModel.generateContent(userPrompt);
