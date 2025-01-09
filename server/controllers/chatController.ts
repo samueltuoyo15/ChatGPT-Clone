@@ -172,22 +172,26 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
             Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
             "Content-Type": "application/json",
           },
-          responseType: "arraybuffer", 
+          responseType: "arraybuffer",
         }
       );
 
       if (response.status !== 200) {
         throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
-       const base64Image = Buffer.from(response.data as ArrayBuffer).toString("base64");
+
+      const base64Image = Buffer.from(response.data as ArrayBuffer).toString("base64");
       const finalResult = `data:image/png;base64,${base64Image}`;
       res.status(200).json({ response: finalResult });
     } else {
-      const result: string | null = await textModel.generateContent(userPrompt);
-      if (result && typeof result.response === "string") {
-        res.status(200).json({ response: result.response.trim() });
+      const result = await textModel.generateContent(userPrompt);
+
+      // Directly type result.response as string | undefined
+      const response: string | undefined = result.response;
+
+      if (typeof response === "string") {
+        res.status(200).json({ response: response.trim() });
       } else {
-        console.error("Unexpected response type:", typeof result.response);
         res.status(500).json({
           message: "Unexpected response type from the model",
           error: "Response is not a string",
@@ -196,7 +200,6 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
     }
   } catch (error: any) {
     console.error("Error generating content:", error);
-
     res.status(500).json({
       message: "Internal server error",
       error: error instanceof Error ? error.message : "Unknown error",
