@@ -150,8 +150,8 @@ const Main = () => {
   e.preventDefault();
   if (!input.trim()) return;
    const imageKeywords = {
-      verbs: ["draw", "illustrate", "sketch", "visualize", "create", "design", "generate", "paint"],
-      nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "illustration"],
+      verbs: ["draw", "illustrate", "imagine", "sketch", "visualize", "create", "design", "generate", "paint"],
+      nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "imagine", "illustration"],
     };
 
     const lowerInput = input.toLowerCase();
