@@ -47,7 +47,7 @@ const Main = () => {
   if (currentSystemTheme.addEventListener) {
     currentSystemTheme.addEventListener("change", handleThemeChange);
   } else {
-    currentSystemTheme.addListener(handleThemeChange); // Fallback for older browsers
+    currentSystemTheme.addListener(handleThemeChange); 
   }
 
   return () => {
@@ -232,7 +232,7 @@ const handleQuickGenerate = (content: string) => {
   const closeNav = () => setShowSettings(false);
   
   return (
-    <section className={`${checkSystemTheme === "dark" ? "bg-zinc-800 min-h-screen" : "bg-white text-black text-4xl min-h-screen"}`}>
+    <section className={`min-h-screen ${checkSystemTheme === "dark" ? "bg-zinc-800" : "bg-white text-black text-4xl"}`}>
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations || []}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
