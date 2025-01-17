@@ -20,7 +20,7 @@ type HuggingFaceResponse = {
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY || 'null');
-const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 const HUGGING_FACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large";
 const HUGGING_FACE_API_KEY = process.env.HUGGING_FACE_API_KEY || 'null';
