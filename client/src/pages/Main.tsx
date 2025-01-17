@@ -25,6 +25,7 @@ interface Session {
 
 const Main = () => {
   const [input, setInput] = useState<string>("");
+  const [checkSystemTheme, setCheckSystemTheme] = useState<"light" | "dark">("light");
   const [loading, setLoading] = useState<boolean>(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -34,7 +35,31 @@ const Main = () => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [fetchedConversations, setFetchedConversations] = useState<Conversation[]>([])
   const { id } = useParams();
-    
+  
+  useEffect(() => {
+  const currentSystemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+  setCheckSystemTheme(currentSystemTheme.matches ? "dark" : "light");
+
+  const handleThemeChange = (event: MediaQueryListEvent) => {
+    setCheckSystemTheme(event.matches ? "dark" : "light");
+  };
+
+  if (currentSystemTheme.addEventListener) {
+    currentSystemTheme.addEventListener("change", handleThemeChange);
+  } else {
+    currentSystemTheme.addListener(handleThemeChange); // Fallback for older browsers
+  }
+
+  return () => {
+    if (currentSystemTheme.removeEventListener) {
+      currentSystemTheme.removeEventListener("change", handleThemeChange);
+    } else {
+      currentSystemTheme.removeListener(handleThemeChange);
+    }
+  };
+}, []);
+
+  
   useEffect(() => {
     const ConById = async () => {
       try {
@@ -207,7 +232,7 @@ const handleQuickGenerate = (content: string) => {
   const closeNav = () => setShowSettings(false);
   
   return (
-    <section className="bg-zinc-800 min-h-screen">
+    <section className={`${checkSystemTheme === "dark" ? "bg-zinc-800 min-h-screen" : "bg-white text-black text-4xl min-h-screen"}`}>
       <Navbar isOpen={showSettings} closeNav={closeNav} session={session} conversations={fetchedConversations || []}/>
       <header className="text-lg select-none font-sans bg-zinc-800 fixed top-0 w-full text-white p-5 flex justify-between items-center md:pl-52">
         {session?.email ? (
