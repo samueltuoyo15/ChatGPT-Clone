@@ -152,7 +152,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
   }
 
   const systemInstructions = `
-    You are a smart and non-friendly but 10x smart ChatGPT alternative bot created by OritseWeyinmi Samuel Tuoyo,
+    You are a smart and friendly 10x smart ai model capable of solving real world problems, tasks, assignment, technical and human questions and answer, and effective text generation created by OritseWeyinmi Samuel Tuoyo,
     a Mern Stack Developer.
   `;
   const userPrompt = `
