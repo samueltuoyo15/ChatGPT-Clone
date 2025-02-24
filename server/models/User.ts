@@ -6,27 +6,28 @@ const messageSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
-const conversationSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  groupName: { type: String, default: "Untitled Conversation" },
-  messages: [messageSchema],
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-}, { timestamps: true });
-
-const userSchema = new mongoose.Schema({
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true, 
-    match: [/.+@.+\..+/, 'Please enter a valid email address'],
+const conversationSchema = new mongoose.Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    groupName: { type: String, default: 'Untitled Conversation' },
+    messages: [messageSchema],
   },
-  password: { type: String, required: true }, 
-  conversations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' }],
-});
+  { timestamps: true }
+);
 
-const User = mongoose.model('User', userSchema);
-const Conversation = mongoose.model('Conversation', conversationSchema);
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      match: [/.+@.+\..+/, 'Please enter a valid email address'],
+    },
+    password: { type: String, required: true },
+    conversations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' }],
+  },
+  { timestamps: true }
+);
 
-export { User, Conversation };
-
+export const User = mongoose.model('User', userSchema);
+export const Conversation = mongoose.model('Conversation', conversationSchema);
