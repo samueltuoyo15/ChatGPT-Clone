@@ -147,14 +147,14 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
         throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
 
-      const base64Image = Buffer.from(response.data).toString('base64');
+      const base64Image = Buffer.from(response.data as ArrayBuffer).toString('base64');
       res.status(200).json({ response: `data:image/png;base64,${base64Image}` });
     } else {
-      const result = await textModel.generateContent(prompt);
-      const response = result?.response?.text()?.trim();
+      const response = await textModel.generateContent(prompt);
+      const result = response?.response?.text()?.trim();
 
-      if (response) {
-        res.status(200).json({ response });
+      if (result) {
+        res.status(200).json({ data: result });
       } else {
         res.status(500).json({ message: 'Unexpected model response type.' });
       }
