@@ -51,7 +51,7 @@ const Main = () => {
   useEffect(() => {
     const ConById = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE__BY_ID}${id}`)
+        const response = await fetch(`${import.meta.env.VITE_FETCH_BY_ID}${id}`)
         const data = await response.json()
         if (!response.ok) return console.error(data.message)
         setConversation(data.messages)
@@ -126,7 +126,15 @@ const Main = () => {
   const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!input.trim()) return
+    const imageKeywords = {
+      verbs: ["draw", "illustrate", "imagine", "sketch", "visualize", "create", "design", "generate", "paint"],
+      nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "imagine", "illustration"],
+    };
 
+    const lowerInput = input.toLowerCase();
+    const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
+    const isImagePrompt = regex.test(lowerInput) || (imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) && imageKeywords.nouns.some((noun) => lowerInput.includes(noun)));
+    
     setConversation((prev) => [
       ...prev,
       { sender: 'user', message: input, timestamp: new Date().toISOString() }
