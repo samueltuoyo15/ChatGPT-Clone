@@ -148,13 +148,13 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       }
 
       const base64Image = Buffer.from(response.data as ArrayBuffer).toString('base64');
-      res.status(200).json({ message: `data:image/png;base64,${base64Image}` });
+      res.status(200).json({ response: `data:image/png;base64,${base64Image}` });
     } else {
       const response = await textModel.generateContent(prompt);
       const result = response?.response?.text()?.trim();
 
       if (result) {
-        res.status(200).json({ message: result });
+        res.status(200).json({ response: result });
       } else {
         res.status(500).json({ message: 'Unexpected model response type.' });
       }
