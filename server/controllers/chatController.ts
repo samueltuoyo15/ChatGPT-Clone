@@ -11,6 +11,7 @@ const openai = new OpenAI({
     baseURL: process.env.OPENAI_ENDPOINT || ""
 });
 
+
 const IMAGE_MODEL_API_URL = process.env.IMAGE_MODEL_URL || ''
 const IMAGE_MODEL_API_KEY = process.env.IMAGE_MODEL_API_KEY || '';
 
@@ -156,7 +157,7 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const stream = await openai.chat.completions.create({
         model: process.env.MODEL_NAME!,
         messages: [
-          { role: 'system', content: process.env.MODEL_INSTRUCTION || "" },
+          { role: 'system', content: process.env.MODEL_INSTRUCTION || "ChatGpt clone created by OritseWeyinmi Samuel Tuoyo" },
           { role: 'user', content: prompt },
         ],
         stream: true,
