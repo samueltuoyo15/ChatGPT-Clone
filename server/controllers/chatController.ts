@@ -2,14 +2,13 @@ import { Request, Response } from 'express';
 import { User, Conversation } from '../models/User';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { OpenAI } from 'openai';
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const textModel = genAI.getGenerativeModel({
-  model: process.env.MODEL_NAME || '',
-  systemInstruction: process.env.MODEL_INSTRUCTION || '',
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "",
+    baseURL: process.env.OPENAI_ENDPOINT || ""
 });
 
 const IMAGE_MODEL_API_URL = process.env.IMAGE_MODEL_URL || ''
@@ -150,17 +149,33 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       const base64Image = Buffer.from(response.data as ArrayBuffer).toString('base64');
       res.status(200).json({ response: `data:image/png;base64,${base64Image}` });
     } else {
-      const response = await textModel.generateContent(prompt);
-      const result = response?.response?.text()?.trim();
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
 
-      if (result) {
-        res.status(200).json({ response: result });
-      } else {
-        res.status(500).json({ message: 'Unexpected model response type.' });
+      const stream = await openai.chat.completions.create({
+        model: process.env.MODEL_NAME!,
+        messages: [
+          { role: 'system', content: process.env.MODEL_INSTRUCTION || "" },
+          { role: 'user', content: prompt },
+        ],
+        stream: true,
+      });
+
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content || '';
+        if (text) {
+          res.write(`data: ${JSON.stringify({ response: text })}\n\n`);
+        }
       }
+
+      res.end();
     }
   } catch (error) {
     console.error('Error generating content:', error);
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
+
+
+ 

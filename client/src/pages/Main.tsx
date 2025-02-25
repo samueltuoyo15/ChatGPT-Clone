@@ -123,52 +123,78 @@ const Main = () => {
     getConv()
   }, [session])
 
-  const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!input.trim()) return
-    const imageKeywords = {
-      verbs: ["draw", "illustrate", "imagine", "sketch", "visualize", "create", "design", "generate", "paint"],
-      nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "imagine", "illustration"],
-    };
+const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!input.trim()) return;
 
-    const lowerInput = input.toLowerCase();
-    const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
-    const isImagePrompt = regex.test(lowerInput) || (imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) && imageKeywords.nouns.some((noun) => lowerInput.includes(noun)));
-    
+  const imageKeywords = {
+    verbs: ["draw", "illustrate", "imagine", "sketch", "visualize", "create", "design", "generate", "paint"],
+    nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "imagine", "illustration"],
+  };
+
+  const lowerInput = input.toLowerCase();
+  const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
+  const isImagePrompt = regex.test(lowerInput) || (imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) && imageKeywords.nouns.some((noun) => lowerInput.includes(noun)));
+
+  setConversation((prev) => [
+    ...prev,
+    { sender: "user", message: input, timestamp: new Date().toISOString() },
+  ]);
+  setLoading(true);
+
+  try {
+    const res = await fetch(import.meta.env.VITE_BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch content");
+
+    let fullMessage = "";
     setConversation((prev) => [
       ...prev,
-      { sender: 'user', message: input, timestamp: new Date().toISOString() }
-    ])
-    setLoading(true)
+      { sender: "ai", message: "", timestamp: new Date().toISOString() },
+    ]);
 
-    try {
-      const res = await fetch(import.meta.env.VITE_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? 'image' : 'text' })
-      })
+    const reader = res.body?.getReader();
+    const decoder = new TextDecoder();
 
-      if (!res.ok) throw new Error('Failed to fetch content')
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
 
-      const data = await res.json()
-      const fullMessage = data.response
+        const parsedChunks = chunk.split("\n").filter((line) => line.trim().startsWith("data:")).map((line) => {
+            try {
+              return JSON.parse(line.replace("data: ", "")).response;
+            } catch {
+              return "";
+            }
+          }).join("");
 
-      setConversation((prev) => [
-        ...prev,
-        { sender: 'ai', message: fullMessage, timestamp: new Date().toISOString() }
-      ])
-    } catch (error) {
-      console.error(error)
-      setConversation((prev) => [
-        ...prev,
-        { sender: 'ai', message: 'Error generating content.', timestamp: new Date().toISOString() }
-      ])
-    } finally {
-      setLoading(false)
+        fullMessage += parsedChunks;
+
+        setConversation((prev) => {
+          const updatedMessages = [...prev];
+          updatedMessages[updatedMessages.length - 1].message = fullMessage; 
+          return updatedMessages;
+        });
+      }
     }
-
-    setInput('')
+  } catch (error) {
+    console.error(error);
+    setConversation((prev) => [
+      ...prev,
+      { sender: "ai", message: "Error generating content.", timestamp: new Date().toISOString() },
+    ]);
+  } finally {
+    setLoading(false);
   }
+
+  setInput("");
+};
 
   const startNewConversation = async () => {
     try {
