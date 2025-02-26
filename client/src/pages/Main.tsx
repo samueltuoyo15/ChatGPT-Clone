@@ -33,7 +33,7 @@ const Main = () => {
   const sendButtonRef = useRef<HTMLButtonElement>(null)
   const [session, setSession] = useState<Session>({})
   const [showSettings, setShowSettings] = useState<boolean>(false)
-  const [imageResponse, setIsImageResponse] = useState<string | null>(null)
+  const [imageResponse, setImageResponse] = useState<string | null>(null)
   const [fetchedConversations, setFetchedConversations] = useState<Conversation[]>([])
   const { id } = useParams()
 
@@ -78,9 +78,8 @@ const Main = () => {
   }, [])
 
   useEffect(() => {
+    if (!session.email) return
     const saveConversation = async () => {
-      if (!session.email) return
-
       try {
         const formattedMessages = conversation.map((msg) => ({
           sender: msg.sender,
@@ -110,9 +109,8 @@ const Main = () => {
   }, [conversation, session?.email])
 
   useEffect(() => {
+    if (!session.email) return
     const getConv = async () => {
-      if (!session || !session?.email) return
-
       try {
         const res = await fetch(`${import.meta.env.VITE_GETCONV_URL}?email=${session?.email}`)
         const data = await res.json()
@@ -122,7 +120,7 @@ const Main = () => {
       }
     }
     getConv()
-  }, [session])
+  }, [session.email])
 
 const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -276,8 +274,8 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
-                      {chat.message.startsWith('data:image/') ? (
-                        {Loading ? <SkeletonLoader /> : <img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />}
+                      {imageResponse && chat.message.startsWith('data:image/') ? (
+                        {loading ? (<SkeletonLoader />) : (<img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />)}
                       ) : (
                         <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
                           {chat.message}
