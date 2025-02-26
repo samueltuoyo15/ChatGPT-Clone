@@ -282,7 +282,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                         </ReactMarkdown>
                       )}
                       <div className="ml-10">
-                        {!imageResponse.startsWith('data:image/') ? (
+                        {!imageResponse?.startsWith('data:image/') ? (
                           <>
                             <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
                             <FaVolumeUp
