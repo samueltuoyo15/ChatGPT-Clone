@@ -195,7 +195,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     ]);
   } finally {
     setLoading(false);
-    setImageResponseReady(false);
+    setImageResponseLoading(false);
   }
 
   setInput("");
