@@ -33,6 +33,7 @@ const Main = () => {
   const sendButtonRef = useRef<HTMLButtonElement>(null)
   const [session, setSession] = useState<Session>({})
   const [showSettings, setShowSettings] = useState<boolean>(false)
+  const [imageResponse, setIsImageResponse] = useState<string | null>(null)
   const [fetchedConversations, setFetchedConversations] = useState<Conversation[]>([])
   const { id } = useParams()
 
@@ -141,16 +142,17 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     { sender: "user", message: input, timestamp: new Date().toISOString() },
   ]);
   setLoading(true);
-
+  setImageResponse(null)
   try {
     const res = await fetch(import.meta.env.VITE_BASE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
     });
-   console.log(res.response)
+ 
     if (!res.ok) throw new Error("Failed to fetch content");
-
+    const data = await res.json()
+    if(isImagePrompt) setImageResponse(data.response)
     let fullMessage = "";
     setConversation((prev) => [
       ...prev,
@@ -275,14 +277,14 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
                       {chat.message.startsWith('data:image/') ? (
-                        <img src={chat.message} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />
+                        {Loading ? <SkeletonLoader /> : <img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />}
                       ) : (
                         <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
                           {chat.message}
                         </ReactMarkdown>
                       )}
                       <div className="ml-10">
-                        {!chat.message.startsWith('data:image/') ? (
+                        {!imageResponse.startsWith('data:image/') ? (
                           <>
                             <FaCopy className="text-white inline text-sm mt-4" onClick={() => navigator.clipboard.writeText(chat.message)} />
                             <FaVolumeUp
