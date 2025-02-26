@@ -34,6 +34,7 @@ const Main = () => {
   const [session, setSession] = useState<Session>({})
   const [showSettings, setShowSettings] = useState<boolean>(false)
   const [imageResponse, setImageResponse] = useState<string | null>(null)
+  const [imageResponseLoading, setImageResponseLoading] = useState<boolean>(false)
   const [fetchedConversations, setFetchedConversations] = useState<Conversation[]>([])
   const { id } = useParams()
 
@@ -140,7 +141,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     { sender: "user", message: input, timestamp: new Date().toISOString() },
   ]);
   setLoading(true);
-  setImageResponse(null)
+  setImageResponseLoading(true)
   try {
     const res = await fetch(import.meta.env.VITE_BASE_URL, {
       method: "POST",
@@ -150,7 +151,10 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
  
     if (!res.ok) throw new Error("Failed to fetch content");
     const data = await res.json()
-    if(isImagePrompt) setImageResponse(data.response)
+    if(isImagePrompt){
+     setImageResponse(data.response)
+     setImageResponseLoading(false)
+    }
     let fullMessage = "";
     setConversation((prev) => [
       ...prev,
@@ -191,6 +195,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     ]);
   } finally {
     setLoading(false);
+    setImageResponseReady(false);
   }
 
   setInput("");
@@ -274,6 +279,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                   <>
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
+                      {imageResponseLoading && <SkeletonLoader />}
                       {imageResponse !== null && chat.message.startsWith('data:image/') ? (
                         <img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />
                       ) : (
