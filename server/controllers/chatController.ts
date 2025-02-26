@@ -148,7 +148,6 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       }
 
       const base64Image = Buffer.from(response.data as ArrayBuffer).toString('base64');
-     console.log(base64Image)
       res.status(200).json({ response: `data:image/png;base64,${base64Image}` });
     } else {
       res.setHeader('Content-Type', 'text/event-stream');

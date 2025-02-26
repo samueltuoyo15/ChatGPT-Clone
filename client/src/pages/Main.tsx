@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom"
 import { FaPaperPlane, FaBars, FaRegEdit, FaCopy, FaArrowUp, FaVolumeUp, FaShareAlt } from 'react-icons/fa'
 import { IoIosArrowDown } from 'react-icons/io'
 import ReactMarkdown from 'react-markdown'
-import Loader from '../components/Loader'
+import { SkeletonLoader, Loader } from '../components/Loader'
 import Navbar from '../components/Navbar'
 
 interface ConversationMessage {
