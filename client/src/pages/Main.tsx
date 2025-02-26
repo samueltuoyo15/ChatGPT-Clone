@@ -275,7 +275,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                     <img src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" className="float-left w-8 mr-3" />
                     <div>
                       {imageResponse && chat.message.startsWith('data:image/') ? (
-                        {loading ? (<SkeletonLoader />) : (<img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" />)}
+                        {loading ? ( <SkeletonLoader />) : imageResponse ? ( <img src={imageResponse} alt="Generated Content" className="rounded-lg mt-2 md:w-64" /> ) : null}
                       ) : (
                         <ReactMarkdown className="prose prose-sm leading-loose overflow-x-auto">
                           {chat.message}
