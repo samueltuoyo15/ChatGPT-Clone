@@ -148,7 +148,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
     });
-
+   console.log(res.response)
     if (!res.ok) throw new Error("Failed to fetch content");
 
     let fullMessage = "";
