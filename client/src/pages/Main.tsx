@@ -134,57 +134,69 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
 
   const lowerInput = input.toLowerCase();
   const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
-  const isImagePrompt = regex.test(lowerInput) || (imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) && imageKeywords.nouns.some((noun) => lowerInput.includes(noun)));
+  const isImagePrompt = regex.test(lowerInput) || (
+    imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) &&
+    imageKeywords.nouns.some((noun) => lowerInput.includes(noun))
+  );
 
   setConversation((prev) => [
     ...prev,
     { sender: "user", message: input, timestamp: new Date().toISOString() },
   ]);
   setLoading(true);
-  setImageResponseLoading(true)
+  setImageResponseLoading(true);
+
   try {
     const res = await fetch(import.meta.env.VITE_BASE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
     });
- 
+
     if (!res.ok) throw new Error("Failed to fetch content");
-    const data = await res.json()
-    if(isImagePrompt){
-     setImageResponse(data.response)
-     setImageResponseLoading(false)
-    }
-    let fullMessage = "";
-    setConversation((prev) => [
-      ...prev,
-      { sender: "ai", message: "", timestamp: new Date().toISOString() },
-    ]);
 
-    const reader = res.body?.getReader();
-    const decoder = new TextDecoder();
+    if (isImagePrompt) {
+      const data = await res.json();
+      setImageResponse(data.response);
+      setImageResponseLoading(false);
+    } else {
+      let fullMessage = "";
+      setConversation((prev) => [
+        ...prev,
+        { sender: "ai", message: "", timestamp: new Date().toISOString() },
+      ]);
 
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
 
-        const parsedChunks = chunk.split("\n").filter((line) => line.trim().startsWith("data:")).map((line) => {
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+
+          const lines = chunk.split("\n").filter((line) => line.trim().startsWith("data: "));
+
+          for (const line of lines) {
             try {
-              return JSON.parse(line.replace("data: ", "")).response;
-            } catch {
-              return "";
+              const jsonString = line.replace("data: ", "").trim();
+              const parsedData = JSON.parse(jsonString);
+              const text = parsedData.response;
+
+              if (text) {
+                fullMessage += text;
+                setConversation((prev) => {
+                  const updatedMessages = [...prev];
+                  updatedMessages[updatedMessages.length - 1].message = fullMessage;
+                  return updatedMessages;
+                });
+              }
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
             }
-          }).join("");
-
-        fullMessage += parsedChunks;
-
-        setConversation((prev) => {
-          const updatedMessages = [...prev];
-          updatedMessages[updatedMessages.length - 1].message = fullMessage; 
-          return updatedMessages;
-        });
+          }
+        }
       }
     }
   } catch (error) {
