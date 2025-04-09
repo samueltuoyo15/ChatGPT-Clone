@@ -127,18 +127,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   if (!input.trim()) return;
 
-  const imageKeywords = {
-    verbs: ["draw", "illustrate", "imagine", "sketch", "visualize", "create", "design", "generate", "paint"],
-    nouns: ["image", "images", "pictures", "picture", "art", "drawing", "sketch", "imagine", "illustration"],
-  };
-
-  const lowerInput = input.toLowerCase();
-  const regex = /(draw|illustrate|sketch|visualize|create|design|generate|paint)\s.*\b(image|picture|art|drawing|sketch|illustration)\b/;
-  const isImagePrompt = regex.test(lowerInput) || (
-    imageKeywords.verbs.some((verb) => lowerInput.includes(verb)) &&
-    imageKeywords.nouns.some((noun) => lowerInput.includes(noun))
-  );
-
+ 
   setConversation((prev) => [
     ...prev,
     { sender: "user", message: input, timestamp: new Date().toISOString() },
@@ -150,16 +139,10 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     const res = await fetch(import.meta.env.VITE_BASE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: input.trim(), type: isImagePrompt ? "image" : "text" }),
+      body: JSON.stringify({ prompt: input.trim()}),
     });
 
     if (!res.ok) throw new Error("Failed to fetch content");
-
-    if (isImagePrompt) {
-      const data = await res.json();
-      setImageResponse(data.response);
-      setImageResponseLoading(false);
-    } else {
       let fullMessage = "";
       setConversation((prev) => [
         ...prev,
@@ -197,7 +180,6 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
             }
           }
         }
-      }
     }
   } catch (error) {
     console.error(error);
