@@ -10,7 +10,7 @@ const port = process.env.PORT;
 
 const app: Application = express();
 
-connectDb();
+
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
@@ -19,5 +19,6 @@ app.use("/auth", authRoute);
 app.use("/chat", chatRoutes);
 
 app.listen(port, () => {
+  connectDb();
   console.log(`Server is running on port ${port}`);
 });

@@ -12,8 +12,6 @@ const openai = new OpenAI({
 });
 
 const MODEL_INSTRUCTION = process.env.MODEL_INSTRUCTION?.trim() || ""
-const IMAGE_MODEL_API_URL = process.env.IMAGE_MODEL_URL || ''
-const IMAGE_MODEL_API_KEY = process.env.IMAGE_MODEL_API_KEY || '';
 
 export const createConversation = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -125,31 +123,7 @@ export const deleteConversation = async (req: Request, res: Response): Promise<a
 
 export const generate = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { prompt, type } = req.body;
-    if (!prompt || typeof prompt !== 'string') {
-      return res.status(400).json({ message: 'Invalid or missing prompt.' });
-    }
-
-    if (type === 'image') {
-      const response = await axios.post(
-        IMAGE_MODEL_API_URL,
-        { inputs: prompt },
-        {
-          headers: {
-            Authorization: `Bearer ${IMAGE_MODEL_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-        }
-      );
-
-      if (response.status !== 200) {
-        throw new Error(`Hugging Face API error: ${response.statusText}`);
-      }
-
-      const base64Image = Buffer.from(response.data as ArrayBuffer).toString('base64');
-      res.status(200).json({ response: `data:image/png;base64,${base64Image}` });
-    } else {
+    const { prompt } = req.body;
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
@@ -164,14 +138,13 @@ export const generate = async (req: Request, res: Response): Promise<any> => {
       });
 
       for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content || '';
-        if (text) {
-          res.write(`data: ${JSON.stringify({ response: text })}\n\n`);
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          res.write(`data: ${JSON.stringify({ response: content })}\n\n`);
         }
       }
 
-      res.end();
-    }
+      res.end()
   } catch (error) {
     console.error('Error generating content:', error);
     res.status(500).json({ message: 'Internal server error.' });
