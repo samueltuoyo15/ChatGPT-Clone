@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "./", 
+    "paths": {
+      "@/*": ["./*"],
+      "@/routes/*": ["./routes/*"], 
+      "@/middlewares/*": ["./middlewares/*"], 
+      "@/config/*": ["./config/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/postgres/*": ["./postgres/*"],
+      "@/prisma/*": ["./prisma/*"],
+      "@/redis/*": ["./redis/*"],
+      "@/utils/*": ["./utils/*"]
+    }
+  }
+}

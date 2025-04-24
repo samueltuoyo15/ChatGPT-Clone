@@ -1,0 +1,47 @@
+{
+  "name": "chatgptclonebackend",
+  "version": "1.0.0",
+  "description": "ChatGpt Clone backend am working on",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "nodemon -r tsconfig-paths/register server.ts",
+    "start": "ts-node -r tsconfig-paths/register server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samueltuoyo15/ChatGPT-Clone.git"
+  },
+  "keywords": [],
+  "author": "Samuel Tuoyo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samueltuoyo15/ChatGPT-Clone/issues"
+  },
+  "homepage": "https://github.com/samueltuoyo15/ChatGPT-Clone#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/express-session": "^1.18.1",
+    "@types/helmet": "^0.0.48",
+    "@types/joi": "^17.2.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.14.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
